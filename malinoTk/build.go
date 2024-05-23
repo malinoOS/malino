@@ -32,13 +32,13 @@ func buildProj() error {
 	err = os.WriteFile("Makefile", []byte(
 		"all:\n"+
 			"	sudo modprobe nbd max_part=8\n"+
-			"	sudo qemu-nbd -c /dev/$(DRIVE) golinux-main/linux.qcow2\n"+
+			"	sudo qemu-nbd -c /dev/nbd0 golinux-main/linux.qcow2\n"+
 			"	mkdir -p disk\n"+
-			"	sudo mount -t ext4 /dev/$(DRIVE)p1 disk\n"+
+			"	sudo mount -t ext4 /dev/nbd0p1 disk\n"+
 			"	sudo mv malinoOS disk/sbin/malino\n"+
 			"	sudo umount disk\n"+
 			"	rm -rf disk\n"+
-			"	sudo qemu-nbd -d /dev/$(DRIVE)\n"), 0777)
+			"	sudo qemu-nbd -d /dev/nbd0\n"), 0777)
 	if err != nil {
 		return err
 	}

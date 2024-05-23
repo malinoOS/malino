@@ -38,7 +38,7 @@ func newProj(name string) error {
 			")\n\n"+
 			"func main() {\n"+
 			"	fmt.Println(\"welcome to "+name+"!\")\n"+
-			"	libmalino.test()\n"+
+			"	libmalino.Test()\n"+
 			"	for {}\n"+
 			"}"), 0777)
 	if err != nil {
