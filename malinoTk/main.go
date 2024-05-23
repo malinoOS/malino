@@ -38,6 +38,14 @@ func main() {
 			} else {
 				fmt.Printf("build successful")
 			}
+		} else if args[0] == "run" {
+			err := runProj()
+			if err != nil {
+				fmt.Printf("err: %v", err.Error())
+				os.Exit(1)
+			} else {
+				fmt.Printf("run successful")
+			}
 		}
 	} else {
 		printHelp()

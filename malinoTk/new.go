@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -23,8 +24,9 @@ func newProj(name string) error {
 
 	println("creating Go project...")
 	cmd := exec.Command("/usr/bin/go", "mod", "init", name)
-	_, err = cmd.Output()
+	stdout, err := cmd.CombinedOutput()
 	if err != nil {
+		fmt.Println(string(stdout))
 		return err
 	}
 
@@ -37,9 +39,13 @@ func newProj(name string) error {
 			"	\"fmt\"\n"+
 			")\n\n"+
 			"func main() {\n"+
-			"	fmt.Println(\"welcome to "+name+"!\")\n"+
+			"	fmt.Println(\"malino (project "+name+") booted successfully. Type a line of text to get it echoed back.\")\n"+
 			"	libmalino.Test()\n"+
-			"	for {}\n"+
+			"	for {\n"+
+			"		fmt.Print(\"Input: \")\n"+
+			"		input := libmalino.Readline()\n"+
+			"		fmt.Println(\"Text typed: \" + input)\n"+
+			"	}\n"+
 			"}"), 0777)
 	if err != nil {
 		return err
@@ -70,8 +76,9 @@ func newProj(name string) error {
 
 	println("setting up golinux (this will take a while)...")
 	cmd = exec.Command("/usr/bin/make", "createVM", "clean", "prepare", "buildInit", "buildFallsh", "install")
-	_, err = cmd.Output()
+	stdout, err = cmd.CombinedOutput()
 	if err != nil {
+		fmt.Println(string(stdout))
 		return err
 	}
 

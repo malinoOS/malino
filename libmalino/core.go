@@ -5,5 +5,5 @@ import (
 )
 
 func Test() {
-	fmt.Printf("waaa\n")
+	fmt.Printf("libmalino works!\n")
 }

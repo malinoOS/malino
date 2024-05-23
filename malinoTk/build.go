@@ -14,16 +14,18 @@ func buildProj() error {
 
 	println("getting dependencies...")
 	cmd := exec.Command("/usr/bin/go", "mod", "tidy")
-	stdout, err := cmd.Output()
+	stdout, err := cmd.CombinedOutput()
 	if err != nil {
+		fmt.Println(string(stdout))
 		return err
 	}
 	fmt.Println(string(stdout))
 
 	println("building project...")
 	cmd = exec.Command("/usr/bin/go", "build", "-o", "malinoOS")
-	stdout, err = cmd.Output()
+	stdout, err = cmd.CombinedOutput()
 	if err != nil {
+		fmt.Println(string(stdout))
 		return err
 	}
 	fmt.Println(string(stdout))
@@ -45,11 +47,11 @@ func buildProj() error {
 
 	println("running make...")
 	cmd = exec.Command("/usr/bin/make")
-	stdout, err = cmd.Output()
+	stdout, err = cmd.CombinedOutput()
 	if err != nil {
+		fmt.Println(string(stdout))
 		return err
 	}
-	fmt.Println(string(stdout))
 
 	return nil
 }
