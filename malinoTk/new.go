@@ -63,7 +63,7 @@ func newProj(name string) error {
 	}
 
 	println("setting up golinux (this will take a while)...")
-	cmd = exec.Command("/usr/bin/make", "createVM")
+	cmd = exec.Command("/usr/bin/make", "createVM", "clean", "prepare", "buildInit", "buildFallsh", "install")
 	_, err = cmd.Output()
 	if err != nil {
 		return err
@@ -144,13 +144,18 @@ func Unzip(source, destination string) error {
 	return nil
 }
 
-func goToParentFolder() {
+func goToParentFolder() error {
 	currentDir, err := os.Getwd()
 	if err != nil {
-		return err
+		// give up, if you can't do a cd .. you shouldn't be running
+		println(err.Error())
+		os.Exit(1)
 	}
 	err = os.Chdir(filepath.Dir(currentDir))
 	if err != nil {
-		return err
+		// give up, if you can't do a cd .. you shouldn't be running
+		println(err.Error())
+		os.Exit(1)
 	}
+	return nil
 }
