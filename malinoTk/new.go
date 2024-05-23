@@ -58,7 +58,7 @@ func newProj(name string) error {
 	}
 
 	println("deleting zip...")
-	err = os.Remove(golinux.zip)
+	err = os.Remove("golinux.zip")
 	if err != nil {
 		return err
 	}
