@@ -7,12 +7,12 @@ import (
 )
 
 func runProj() error {
-	println("checking if go.mod exists...")
+	println("Checking if go.mod exists...")
 	if _, err := os.Stat("go.mod"); os.IsNotExist(err) {
 		return fmt.Errorf("current directory does not contain a valid malino project")
 	}
 
-	println("starting QEMU...")
+	println("Starting QEMU...")
 	cmd := exec.Command("qemu-system-x86_64", "-drive", "file=golinux-main/linux.qcow2,format=qcow2", "-m", "4G", "-enable-kvm", "-smp", "4")
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {

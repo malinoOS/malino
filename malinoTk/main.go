@@ -6,6 +6,7 @@ import (
 )
 
 var args = os.Args[1:]
+var Version string = "undefined"
 
 func main() {
 	if len(args) > 0 {
@@ -16,14 +17,14 @@ func main() {
 			if len(args) > 1 {
 				err := newProj(args[1])
 				if err != nil {
-					fmt.Printf("err: %v", err.Error())
+					fmt.Printf("err: %v\n", err.Error())
 					os.Exit(1)
 				} else {
 					wd, err := os.Getwd()
 					if err != nil {
-						fmt.Printf("Project \"%v\" created.", args[1])
+						fmt.Printf("Project \"%v\" created.\n", args[1])
 					} else {
-						fmt.Printf("Project \"%v/%v\" created.", wd, args[1])
+						fmt.Printf("Project \"%v/%v\" created\n", wd, args[1])
 					}
 				}
 			} else {
@@ -33,18 +34,18 @@ func main() {
 		} else if args[0] == "build" {
 			err := buildProj()
 			if err != nil {
-				fmt.Printf("err: %v", err.Error())
+				fmt.Printf("err: %v\n", err.Error())
 				os.Exit(1)
 			} else {
-				fmt.Printf("build successful")
+				fmt.Printf("build successful\n")
 			}
 		} else if args[0] == "run" {
 			err := runProj()
 			if err != nil {
-				fmt.Printf("err: %v", err.Error())
+				fmt.Printf("err: %v\n", err.Error())
 				os.Exit(1)
 			} else {
-				fmt.Printf("run successful")
+				fmt.Printf("run successful\n")
 			}
 		}
 	} else {
@@ -55,10 +56,10 @@ func main() {
 
 func printHelp() {
 	fmt.Print(
-		"malino toolkit\n\n" +
-			"malino help = shows this help menu\n" +
-			"malino new [name] = new project, creates folder and go module with name [name]\n" +
-			"malino build = builds a qcow2 disk image of your OS\n" +
-			"malino run = runs your built qcow2 disk image in QEMU\n" +
-			"malino export = exports your OS into a .ISO file which can be shared or burned onto a CD\n")
+		"malino toolkit v" + Version + "\n\n" +
+			"malino help           Shows this help menu\n" +
+			"malino new [name]     New project, creates folder and go module with name [name]\n" +
+			"malino build          Builds a qcow2 disk image of your OS\n" +
+			"malino run            Runs your built qcow2 disk image in QEMU\n" +
+			"malino export         Exports your OS into a .ISO file which can be shared or burned onto a CD\n")
 }

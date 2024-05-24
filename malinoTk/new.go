@@ -8,10 +8,15 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
+
+	"github.com/briandowns/spinner"
 )
 
 func newProj(name string) error {
-	println("creating directory...")
+	println("Creating directory...")
+	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+	s.Start()
 	err := os.Mkdir(name, 0777)
 	if err != nil {
 		return err
@@ -21,16 +26,20 @@ func newProj(name string) error {
 	if err != nil {
 		return err
 	}
+	s.Stop()
 
-	println("creating Go project...")
+	println("Creating Go project...")
+	s.Start()
 	cmd := exec.Command("/usr/bin/go", "mod", "init", name)
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(stdout))
 		return err
 	}
+	s.Stop()
 
-	println("creating template code...")
+	println("Creating template code...")
+	s.Start()
 	//err = os.WriteFile(fmt.Sprintf("%v/config.malino", name), fmt.Sprintf("[proj]\nname = %v\n")) // nerds say i should "use + instead of sprintf!!!" i literally don't care
 	err = os.WriteFile("main.go", []byte(
 		"package main\n\n"+
@@ -50,20 +59,26 @@ func newProj(name string) error {
 	if err != nil {
 		return err
 	}
+	s.Stop()
 
-	println("downloading golinux...")
+	println("Downloading golinux...")
+	s.Start()
 	err = DownloadFile("https://github.com/malinoOS/golinux/archive/refs/heads/main.zip", "golinux.zip")
 	if err != nil {
 		return err
 	}
+	s.Stop()
 
-	println("unzipping golinux...")
+	println("Unzipping golinux...")
+	s.Start()
 	err = Unzip("golinux.zip", ".") // uhhh
 	if err != nil {
 		return err
 	}
+	s.Stop()
 
-	println("deleting zip...")
+	println("Deleting zip...")
+	s.Start()
 	err = os.Remove("golinux.zip")
 	if err != nil {
 		return err
@@ -73,14 +88,17 @@ func newProj(name string) error {
 	if err != nil {
 		return err
 	}
+	s.Stop()
 
-	println("setting up golinux (this will take a while)...")
+	println("Setting up golinux (this will take a while)...")
+	s.Start()
 	cmd = exec.Command("/usr/bin/make", "createVM", "clean", "prepare", "buildInit", "buildFallsh", "install")
 	stdout, err = cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(stdout))
 		return err
 	}
+	s.Stop()
 
 	// remember to go back to the root where malino command was executed!
 	goToParentFolder()

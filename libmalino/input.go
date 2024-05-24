@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func Readline() string {
+func UserLine() string {
 	var buf [1]byte
 	var cmdString strings.Builder
 	for {
