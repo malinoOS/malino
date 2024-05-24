@@ -1,9 +1,5 @@
 package libmalino
 
-import (
-	"fmt"
-)
-
 type Event struct {
 	ID        int
 	Type      uint8

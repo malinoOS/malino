@@ -2,8 +2,10 @@ package libmalino
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 func ShutdownComputer() {
@@ -19,7 +21,7 @@ func SystemUptimeAsInt() int {
 		return 0
 	}
 	stringRep := strings.Split(strings.Split(string(dat), " ")[1], ".")
-	i, err := strconv.Atoi(stringRep)
+	i, err := strconv.Atoi(stringRep[0])
 	if err != nil {
 		return 0
 	}
@@ -29,7 +31,7 @@ func SystemUptimeAsInt() int {
 func SystemUptimeAsString() string {
 	dat, err := os.ReadFile("/proc/uptime")
 	if err != nil {
-		return 0
+		return ""
 	}
-	return strings.Split(strings.Split(string(dat), " ")[1], ".")
+	return strings.Split(strings.Split(string(dat), " ")[1], ".")[0]
 }
