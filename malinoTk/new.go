@@ -48,11 +48,10 @@ func newProj(name string) error {
 			"	\"fmt\"\n"+
 			")\n\n"+
 			"func main() {\n"+
-			"	fmt.Println(\"malino (project "+name+") booted successfully. Type a line of text to get it echoed back.\")\n"+
-			"	libmalino.Test()\n"+
+			"	fmt.Println(\"malino (project "+name+") booted successfully. Type a line of text to get it echoed back.\")\n\n"+
 			"	for {\n"+
 			"		fmt.Print(\"Input: \")\n"+
-			"		input := libmalino.Readline()\n"+
+			"		input := libmalino.UserLine()\n"+
 			"		fmt.Println(\"Text typed: \" + input)\n"+
 			"	}\n"+
 			"}"), 0777)
