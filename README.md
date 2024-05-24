@@ -1,5 +1,7 @@
 <img src="https://winksplorer.net/malino.png" width="250">
 
+[discord server](https://discord.gg/2yfxxfNT6F)
+
 # malino
 The Malino Linux-based OS development toolkit
 
