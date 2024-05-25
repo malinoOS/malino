@@ -49,6 +49,7 @@ func newProj(name string) error {
 			"	\"fmt\"\n"+
 			")\n\n"+
 			"func main() {\n"+
+			"	defer libmalino.resetTerminalMode()\n"+
 			"	fmt.Println(\"malino (project "+name+") booted successfully. Type a line of text to get it echoed back.\")\n\n"+
 			"	for {\n"+
 			"		fmt.Print(\"Input: \")\n"+

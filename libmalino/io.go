@@ -5,8 +5,14 @@ import (
 	"os"
 	"strings"
 	"syscall"
-	"time"
+	"unsafe"
 )
+
+var oldState *syscall.Termios
+
+func init() {
+	setNonCanonicalMode()
+}
 
 func UserLine() string {
 	var buf [1]byte
@@ -14,9 +20,8 @@ func UserLine() string {
 	for {
 		n, err := syscall.Read(int(os.Stdin.Fd()), buf[:])
 		if err != nil {
-			fmt.Printf("Critcal error while reading characters:\n%v", err)
-			for true {
-			}
+			fmt.Printf("Critical error while reading characters:\n%v", err)
+			return ""
 		}
 		if n > 0 {
 			char := buf[0]
@@ -25,29 +30,53 @@ func UserLine() string {
 				return cmdString.String()
 			} else if char == 127 { // ASCII code for backspace
 				if cmdString.Len() > 0 {
-					// Convert the builder to a string, remove the last character, and create a new builder
 					cmd := cmdString.String()
 					if len(cmd) > 1 {
 						cmdString.Reset()
 						cmdString.WriteString(cmd[:len(cmd)-1])
-						// Move the cursor back and clear the character
 						fmt.Print("\b \b")
 					} else {
-						// If only one character is present, simply reset the builder
 						cmdString.Reset()
-						fmt.Print("\b \b") // Clear the character
+						fmt.Print("\b \b")
 					}
 				}
 			} else {
 				fmt.Print(string(char))
 				cmdString.WriteByte(char)
 			}
-		} else {
-			time.Sleep(time.Millisecond * 10)
 		}
 	}
 }
 
 func ClearScreen() {
 	fmt.Print("\033[2J\033[H")
+}
+
+func setNonCanonicalMode() {
+	fd := int(os.Stdin.Fd())
+	var termios syscall.Termios
+	_, _, errno := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCGETS), uintptr(unsafe.Pointer(&termios)), 0, 0, 0)
+	if errno != 0 {
+		fmt.Printf("Error getting terminal attributes: %v\n", errno)
+		os.Exit(1)
+	}
+	oldState = &termios
+	termios.Lflag &^= syscall.ICANON | syscall.ECHO
+	termios.Cc[syscall.VMIN] = 1
+	termios.Cc[syscall.VTIME] = 0
+	_, _, errno = syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCSETS), uintptr(unsafe.Pointer(&termios)), 0, 0, 0)
+	if errno != 0 {
+		fmt.Printf("Error setting terminal attributes: %v\n", errno)
+		os.Exit(1)
+	}
+}
+
+func resetTerminalMode() {
+	if oldState != nil {
+		fd := int(os.Stdin.Fd())
+		_, _, errno := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCSETS), uintptr(unsafe.Pointer(oldState)), 0, 0, 0)
+		if errno != 0 {
+			fmt.Printf("Error resetting terminal attributes: %v\n", errno)
+		}
+	}
 }
