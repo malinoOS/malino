@@ -106,6 +106,86 @@ func newProj(name string) error {
 	return nil
 }
 
+func newProjHere(name string) error {
+	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+
+	println("Creating Go project...")
+	s.Start()
+	cmd := exec.Command("/usr/bin/go", "mod", "init", name)
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(stdout))
+		return err
+	}
+	s.Stop()
+
+	println("Creating template code...")
+	s.Start()
+	//err = os.WriteFile(fmt.Sprintf("%v/config.malino", name), fmt.Sprintf("[proj]\nname = %v\n")) // nerds say i should "use + instead of sprintf!!!" i literally don't care
+	err = os.WriteFile("main.go", []byte(
+		"package main\n\n"+
+			"import (\n"+
+			"	\"github.com/malinoOS/malino/libmalino\"\n"+
+			"	\"fmt\"\n"+
+			")\n\n"+
+			"func main() {\n"+
+			"	fmt.Println(\"malino (project "+name+") booted successfully. Type a line of text to get it echoed back.\")\n\n"+
+			"	for {\n"+
+			"		fmt.Print(\"Input: \")\n"+
+			"		input := libmalino.UserLine()\n"+
+			"		fmt.Println(\"Text typed: \" + input)\n"+
+			"	}\n"+
+			"}"), 0777)
+	if err != nil {
+		return err
+	}
+	s.Stop()
+
+	println("Downloading golinux...")
+	s.Start()
+	err = DownloadFile("https://github.com/malinoOS/golinux/archive/refs/heads/main.zip", "golinux.zip")
+	if err != nil {
+		return err
+	}
+	s.Stop()
+
+	println("Unzipping golinux...")
+	s.Start()
+	err = Unzip("golinux.zip", ".") // uhhh
+	if err != nil {
+		return err
+	}
+	s.Stop()
+
+	println("Deleting zip...")
+	s.Start()
+	err = os.Remove("golinux.zip")
+	if err != nil {
+		return err
+	}
+
+	err = os.Chdir("golinux-main")
+	if err != nil {
+		return err
+	}
+	s.Stop()
+
+	println("Setting up golinux (this will take a while)...")
+	s.Start()
+	cmd = exec.Command("/usr/bin/make", "createVM", "clean", "prepare", "buildInit", "buildFallsh", "install")
+	stdout, err = cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(stdout))
+		return err
+	}
+	s.Stop()
+
+	// remember to go back to the root where malino command was executed!
+	goToParentFolder()
+
+	return nil
+}
+
 func DownloadFile(url string, filepath string) error {
 	// Create the file
 	out, err := os.Create(filepath)
