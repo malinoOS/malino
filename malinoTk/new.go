@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -106,11 +107,16 @@ func newProj(name string) error {
 	return nil
 }
 
-func newProjHere(name string) error {
+func newProjHere() error {
 	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 
 	println("Creating Go project...")
 	s.Start()
+	dir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	name := strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1]
 	cmd := exec.Command("/usr/bin/go", "mod", "init", name)
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {

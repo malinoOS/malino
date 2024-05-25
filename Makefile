@@ -15,6 +15,7 @@ deb:
 		sudo rm -rf malino-deb; \
 		mkdir malino-deb; \
 	fi
+	rm *.deb
 	mkdir malino-deb/DEBIAN
 	mkdir malino-deb/usr
 	mkdir malino-deb/usr/bin
