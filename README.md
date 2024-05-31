@@ -2,8 +2,8 @@
 
 [discord server](https://discord.gg/2yfxxfNT6F)
 
-# malino
-The Malino Linux-based OS development toolkit
+# malino (rewrite)
+The Malino Linux-based OS development toolkit. Rewrite branch is attempting to make the codebase simpler.
 
 # How to use
 > malino is for linux only.
