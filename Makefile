@@ -1,7 +1,7 @@
 parentFolder := $(shell pwd)
 SHELL := /bin/bash
 
-.PHONY: all
+.PHONY: all toolkit
 
 all: toolkit deb install
 
