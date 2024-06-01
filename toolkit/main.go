@@ -21,7 +21,13 @@ func main() {
 			printHelp()
 			os.Exit(0)
 		case "new":
-			newProj(args)
+			if err := newProj(args); err != nil {
+				fmt.Printf("Error while creating project: %v", err.Error())
+			}
+		case "build":
+			if err := buildProj(); err != nil {
+				fmt.Printf("Error while building project: %v", err.Error())
+			}
 		default:
 			fmt.Println("malino: Invalid operation")
 			printHelp()

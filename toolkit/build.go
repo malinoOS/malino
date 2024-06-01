@@ -59,7 +59,9 @@ func buildProj() error {
 	if _, err := os.Stat("bzImage"); os.IsNotExist(err) {
 		fmt.Println("Downloading kernel...")
 		spinner.Start()
-		downloadFile("https://winksplorer.net/bzImage", "bzImage")
+		if err := downloadFile("https://winksplorer.net/bzImage", "bzImage"); err != nil {
+			return err
+		}
 		spinner.Stop()
 	}
 
