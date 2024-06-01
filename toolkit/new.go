@@ -33,6 +33,7 @@ func newProj(args []string) error {
 	spinner.Start()
 	if hasNameArg { // root directory for project. only create if name is specified in args.
 		if err := createAndCD(name); err != nil {
+			spinner.Stop()
 			return err
 		}
 	}
@@ -41,6 +42,7 @@ func newProj(args []string) error {
 	fmt.Println("Creating Go project...")
 	spinner.Start()
 	if err := execCmd(false, "/usr/bin/go", "mod", "init", name); err != nil { // init the go module
+		spinner.Stop()
 		return err
 	}
 	err := os.WriteFile("main.go", []byte(
@@ -50,18 +52,16 @@ func newProj(args []string) error {
 			")\n\n"+
 			"func main() {\n"+
 			"	fmt.Println(\"malino (project "+name+") booted successfully. Type a line of text to get it echoed back.\")\n"+
-			/*"	for {\n"+
-			"		fmt.Print(\"Input: \")\n"+
-			"		input := libmalino.UserLine()\n"+
-			"		fmt.Println(\"Text typed: \" + input)\n"+
-			"	}\n"+*/
+			"	for {} // Word of advice: Never let this app exit. Always end in an infinite loop or shutdown.\n"+
 			"}"), 0777)
 	if err != nil {
+		spinner.Stop()
 		return err
 	}
 
 	err = os.WriteFile(".gitignore", []byte("bzImage\ninitramfs.cpio.gz\n"+name+".iso"), 0777)
 	if err != nil {
+		spinner.Stop()
 		return err
 	}
 	spinner.Stop()
@@ -102,6 +102,8 @@ func newProj(args []string) error {
 	if hasNameArg {
 		goToParentDir()
 	}
+
+	fmt.Println("Done.")
 
 	return nil
 }

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 var args []string
@@ -26,6 +28,14 @@ func main() {
 			}
 		case "build":
 			if err := buildProj(); err != nil {
+				fmt.Printf("Error while building project: %v", err.Error())
+			}
+		case "run":
+			if err := runProj(); err != nil {
+				fmt.Printf("Error while building project: %v", err.Error())
+			}
+		case "export":
+			if err := exportProj(); err != nil {
 				fmt.Printf("Error while building project: %v", err.Error())
 			}
 		default:
@@ -65,7 +75,7 @@ func createAndCD(dir string) error {
 	return nil
 }
 
-func goToParentDir() error {
+func goToParentDir() {
 	currentDir, err := os.Getwd()
 	if err != nil {
 		// give up, if you can't do a cd .. you shouldn't be running
@@ -76,7 +86,6 @@ func goToParentDir() error {
 		// give up, if you can't do a cd .. you shouldn't be running
 		panic(err)
 	}
-	return nil
 }
 
 func execCmd(printOutput bool, args ...string) error {
@@ -92,13 +101,25 @@ func execCmd(printOutput bool, args ...string) error {
 	cmd := exec.Command(cmdName, cmdArgs...)
 
 	// Run the command and capture the combined output
-	stdout, err := cmd.CombinedOutput()
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stdout
+
+	err := cmd.Run()
+	output := stdout.String()
 	if printOutput {
-		fmt.Println(string(stdout))
+		fmt.Println(output)
 	}
+
 	if err != nil {
+		lines := strings.Split(strings.TrimSpace(output), "\n")
+		if len(lines) > 0 {
+			lastLine := lines[len(lines)-1]
+			return fmt.Errorf("command execution failed: %v - last line: %s", err, lastLine)
+		}
 		return fmt.Errorf("command execution failed: %v", err)
 	}
+
 	return nil
 }
 
