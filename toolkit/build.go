@@ -151,11 +151,11 @@ func handleLine(line configLine) error {
 			if err := downloadFile(line.arg1, "file_malinoAutoDownload.tmp"); err != nil {
 				return err
 			}
-			if err := copy("file_malinoAutoDownload.tmp", curDir+line.arg2); err != nil {
+			if err := copyFile("file_malinoAutoDownload.tmp", curDir+line.arg2); err != nil {
 				return err
 			}
 		}
-		if err := copy(line.arg1, curDir+line.arg2); err != nil {
+		if err := copyFile(line.arg1, curDir+line.arg2); err != nil {
 			return err
 		}
 	}

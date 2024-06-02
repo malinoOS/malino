@@ -67,7 +67,7 @@ func SpawnProcess(path string, startDir string, environmentVariables []string, f
 		}
 	}
 
-	if wstatus.Exited() && errorIfExit {
+	if wstatus.Exited() && errorIfExit && wstatus.ExitStatus() != 0 {
 		// Process exited
 		// Create a new error
 		fmt.Printf("err: %v exited with code %d\n", path, wstatus.ExitStatus())

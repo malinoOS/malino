@@ -189,7 +189,7 @@ func downloadFile(url string, filepath string) error {
 	return nil
 }
 
-func copy(src string, dst string) error {
+func copyFile(src string, dst string) error {
 	// Read all content of src to data, may cause OOM for a large file.
 	data, err := os.ReadFile(src)
 	if err != nil {
