@@ -154,6 +154,13 @@ func handleLine(line configLine) error {
 			if err := copyFile("file_malinoAutoDownload.tmp", curDir+line.arg2); err != nil {
 				return err
 			}
+			return nil
+		}
+		if strings.HasPrefix(line.arg1, "dir...") {
+			if err := copyDirectory(line.arg1[6:], curDir+line.arg2); err != nil {
+				return err
+			}
+			return nil
 		}
 		if err := copyFile(line.arg1, curDir+line.arg2); err != nil {
 			return err

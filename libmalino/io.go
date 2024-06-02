@@ -79,3 +79,18 @@ func ResetTerminalMode() {
 		}
 	}
 }
+
+func FakeStdin() *os.File {
+	r, w, _ := os.Pipe()
+	go func() {
+		defer w.Close()
+		for {
+			line := UserLine()
+			if line == "" {
+				break
+			}
+			w.Write([]byte(line + "\n"))
+		}
+	}()
+	return r
+}

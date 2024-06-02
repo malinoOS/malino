@@ -208,3 +208,40 @@ func copyFile(src string, dst string) error {
 	}
 	return nil
 }
+
+func copyDirectory(src string, dst string) error {
+	// Get file info of the source
+	fileInfo, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	if !fileInfo.IsDir() {
+		// If it's a file, call copyFile
+		return copyFile(src, dst)
+	}
+
+	// Create the destination directory
+	if err := os.MkdirAll(dst, fileInfo.Mode()); err != nil {
+		return err
+	}
+
+	// Read all directory entries
+	entries, err := os.ReadDir(src)
+	if err != nil {
+		return err
+	}
+
+	// Loop through each entry
+	for _, entry := range entries {
+		srcPath := filepath.Join(src, entry.Name())
+		dstPath := filepath.Join(dst, entry.Name())
+
+		// Recursively call copyDirectory for each child
+		if err := copyDirectory(srcPath, dstPath); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
