@@ -28,10 +28,15 @@ func SystemUptimeAsInt() int {
 	return i
 }
 
-func SystemUptimeAsString() string {
+func SystemUptimeAsFloat() float64 {
 	dat, err := os.ReadFile("/proc/uptime")
 	if err != nil {
-		return ""
+		return 0
 	}
-	return strings.Split(strings.Split(string(dat), " ")[1], ".")[0]
+	stringRep := strings.Split(string(dat), " ")[1]
+	i, err := strconv.ParseFloat(stringRep, 64)
+	if err != nil {
+		return 0
+	}
+	return i
 }

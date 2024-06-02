@@ -1,10 +1,12 @@
 parentFolder := $(shell pwd)
 SHELL := /bin/bash
 
-all: buildTk deb install
+.PHONY: all toolkit
 
-buildTk:
-	cd $(parentFolder)/malinoTk; \
+all: toolkit deb install
+
+toolkit:
+	cd $(parentFolder)/toolkit; \
 	go mod tidy; \
 	go build -o $(parentFolder)/malino -ldflags "-X main.Version=$(shell date +%y%m%d)"
 
@@ -15,11 +17,11 @@ deb:
 		sudo rm -rf malino-deb; \
 		mkdir malino-deb; \
 	fi
-	rm *.deb
+	-rm *.deb
 	mkdir malino-deb/DEBIAN
 	mkdir malino-deb/usr
 	mkdir malino-deb/usr/bin
-	sudo printf 'Package: malino\nVersion: $(shell date +%y%m%d)\nArchitecture: all\nDepends: golang-go, qemu-system-x86, qemu-utils\nMaintainer: Winksplorer <winksplorer@gordae.com>\nDescription: The Malino Linux-based OS development tookit\n' | sudo tee malino-deb/DEBIAN/control
+	sudo printf 'Package: malino\nVersion: $(shell date +%y%m%d)\nArchitecture: all\nDepends: golang-go, qemu-system-x86, qemu-utils, 7zip | p7zip\nMaintainer: Winksplorer <winksplorer@gordae.com>\nDescription: The Malino Linux-based OS development tookit\n' | sudo tee malino-deb/DEBIAN/control
 	cp $(parentFolder)/malino malino-deb/usr/bin/malino
 	sudo chown -R root:root malino-deb
 	sudo chmod 0755 malino-deb/DEBIAN

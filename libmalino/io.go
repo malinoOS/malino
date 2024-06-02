@@ -52,13 +52,12 @@ func ClearScreen() {
 	fmt.Print("\033[2J\033[H")
 }
 
-func setNonCanonicalMode() {
+func setNonCanonicalMode() error {
 	fd := int(os.Stdin.Fd())
 	var termios syscall.Termios
 	_, _, errno := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCGETS), uintptr(unsafe.Pointer(&termios)), 0, 0, 0)
 	if errno != 0 {
-		fmt.Printf("Error getting terminal attributes: %v\n", errno)
-		os.Exit(1)
+		return errno
 	}
 	oldState = &termios
 	termios.Lflag &^= syscall.ICANON | syscall.ECHO
@@ -66,9 +65,9 @@ func setNonCanonicalMode() {
 	termios.Cc[syscall.VTIME] = 0
 	_, _, errno = syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCSETS), uintptr(unsafe.Pointer(&termios)), 0, 0, 0)
 	if errno != 0 {
-		fmt.Printf("Error setting terminal attributes: %v\n", errno)
-		os.Exit(1)
+		return errno
 	}
+	return nil
 }
 
 func resetTerminalMode() {
