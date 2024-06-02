@@ -24,23 +24,23 @@ func main() {
 			os.Exit(0)
 		case "new":
 			if err := newProj(args); err != nil {
-				fmt.Printf("Error while creating project: %v", err.Error())
+				fmt.Printf("Error while creating project: %v\n", err.Error())
 			}
 		case "build":
 			if err := buildProj(); err != nil {
-				fmt.Printf("Error while building project: %v", err.Error())
+				fmt.Printf("Error while building project: %v\n", err.Error())
 			}
 		case "run":
 			if err := runProj(args); err != nil {
-				fmt.Printf("Error while running project: %v", err.Error())
+				fmt.Printf("Error while running project: %v\n", err.Error())
 			}
 		case "export":
 			if err := exportProj(args); err != nil {
-				fmt.Printf("Error while exporting project: %v", err.Error())
+				fmt.Printf("Error while exporting project: %v\n", err.Error())
 			}
 		case "download-kernel":
 			if err := getKernel(); err != nil {
-				fmt.Printf("Error while downloading kernel: %v", err.Error())
+				fmt.Printf("Error while downloading kernel: %v\n", err.Error())
 			}
 		default:
 			fmt.Println("malino: Invalid operation")

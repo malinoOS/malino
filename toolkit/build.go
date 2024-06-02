@@ -71,8 +71,8 @@ func buildProj() error {
 		spinner.Stop()
 		return err
 	}
-	if _, err := os.Stat("malino.cfg"); !os.IsNotExist(err) {
-		file, err := os.ReadFile("malino.cfg")
+	if _, err := os.Stat(curDir + "/malino.cfg"); !os.IsNotExist(err) {
+		file, err := os.ReadFile(curDir + "/malino.cfg")
 		if err != nil {
 			return err
 		}
@@ -140,6 +140,7 @@ func handleLine(line configLine) error {
 
 	switch line.operation {
 	case "include":
+		fmt.Printf("including %v as %v in the malino system\n", line.arg1, line.arg2)
 		curDir := "undefined"
 		if dir, err := os.Getwd(); err != nil {
 			return err
@@ -150,11 +151,11 @@ func handleLine(line configLine) error {
 			if err := downloadFile(line.arg1, "file_malinoAutoDownload.tmp"); err != nil {
 				return err
 			}
-			if err := copy("file_malinoAutoDownload.tmp", curDir+"/initrd"+line.arg2); err != nil {
+			if err := copy("file_malinoAutoDownload.tmp", curDir+line.arg2); err != nil {
 				return err
 			}
 		}
-		if err := copy(line.arg1, curDir+"/initrd"+line.arg2); err != nil {
+		if err := copy(line.arg1, curDir+line.arg2); err != nil {
 			return err
 		}
 	}

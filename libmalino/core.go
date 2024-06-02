@@ -41,7 +41,7 @@ func SystemUptimeAsFloat() float64 {
 	return i
 }
 
-func SpawnProcess(path string, startDir string, environmentVariables []string, files []uintptr, wait bool, errorIfExit bool) error {
+func SpawnProcess(path string, startDir string, environmentVariables []string, files []uintptr, wait bool, errorIfExit bool, args ...string) error {
 	procAttr := &syscall.ProcAttr{
 		Dir:   startDir,
 		Env:   environmentVariables,
@@ -50,7 +50,7 @@ func SpawnProcess(path string, startDir string, environmentVariables []string, f
 	}
 	var wstatus syscall.WaitStatus
 
-	pid, err := syscall.ForkExec(path, nil, procAttr)
+	pid, err := syscall.ForkExec(path, args, procAttr)
 	if err != nil {
 		fmt.Printf("err: could not execute %v: %v\n", path, err.Error())
 		return err
