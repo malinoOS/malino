@@ -31,12 +31,16 @@ func main() {
 				fmt.Printf("Error while building project: %v", err.Error())
 			}
 		case "run":
-			if err := runProj(); err != nil {
-				fmt.Printf("Error while building project: %v", err.Error())
+			if err := runProj(args); err != nil {
+				fmt.Printf("Error while running project: %v", err.Error())
 			}
 		case "export":
-			if err := exportProj(); err != nil {
-				fmt.Printf("Error while building project: %v", err.Error())
+			if err := exportProj(args); err != nil {
+				fmt.Printf("Error while exporting project: %v", err.Error())
+			}
+		case "download-kernel":
+			if err := getKernel(); err != nil {
+				fmt.Printf("Error while downloading kernel: %v", err.Error())
 			}
 		default:
 			fmt.Println("malino: Invalid operation")
@@ -53,12 +57,15 @@ func main() {
 func printHelp() {
 	fmt.Print(
 		"malino toolkit (rewrite branch) v" + Version + "\n\n" +
-			"malino help         Shows this help menu\n" +
-			"malino new [name]   New project, creates folder and go module with name [name]\n" +
-			"malino new          New project, does not make folder, and uses the name of the folder it's executed in\n" +
-			"malino build        Builds a disk image of your OS\n" +
-			"malino run          Runs your built  disk image in QEMU\n" +
-			"malino export       Exports your OS into a .ISO file which can be shared or burned onto a CD\n")
+			"malino help        	 Shows this help menu\n" +
+			"malino new [name]  	 New project, creates folder and go module with name [name]\n" +
+			"malino new         	 New project, does not make folder, and uses the name of the folder it's executed in\n" +
+			"malino build       	 Builds a cpio of your OS\n" +
+			"malino run            	 Runs your OS cpio with a precompiled linux\n" +
+			"malino run -serial      Runs your OS cpio with a precompiled linux, but no qemu window shows, and interacts in stdio\n" +
+			"malino export           Exports your OS into a .ISO file which can be shared or ran on real hardware BIOS machines\n" +
+			"malino export -efi		 Exports your OS into an EFI .ISO file which can be shared or ran on real hardware UEFI machines\n" +
+			"malino download-kernel  Downloads a precompiled Linux kernel.\n")
 }
 
 func createAndCD(dir string) error {
@@ -117,6 +124,41 @@ func execCmd(printOutput bool, args ...string) error {
 			lastLine := lines[len(lines)-1]
 			return fmt.Errorf("command execution failed: %v - last line: %s", err, lastLine)
 		}
+		return fmt.Errorf("command execution failed: %v", err)
+	}
+
+	return nil
+}
+
+func extractWith7z(file string) error {
+	if err := execCmd(false, "7z", "x", file); err == nil {
+		return nil
+	}
+	if err := execCmd(false, "7zz", "x", file); err != nil {
+		return err
+	}
+	return nil
+}
+
+func execCmdDirectStdio(args ...string) error {
+	if len(args) == 0 {
+		return fmt.Errorf("no command provided")
+	}
+
+	// Extract the command name and arguments
+	cmdName := args[0]
+	cmdArgs := args[1:]
+
+	// Create the command with the provided arguments
+	cmd := exec.Command(cmdName, cmdArgs...)
+
+	// Set the command's standard input, output, and error to the calling process's standard input, output, and error
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	if err != nil {
 		return fmt.Errorf("command execution failed: %v", err)
 	}
 

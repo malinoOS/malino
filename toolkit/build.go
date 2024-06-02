@@ -70,13 +70,10 @@ func buildProj() error {
 	spinner.Stop()
 
 	goToParentDir()
-	if _, err := os.Stat("bzImage"); os.IsNotExist(err) {
+	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
 		fmt.Println("Downloading kernel...")
 		spinner.Start()
-		if err := downloadFile("https://winksplorer.net/bzImage", "bzImage"); err != nil {
-			spinner.Stop()
-			return err
-		}
+		getKernel()
 		spinner.Stop()
 	}
 
