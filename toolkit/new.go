@@ -76,6 +76,12 @@ func newProj(args []string) error {
 		goToParentDir()
 	}
 
+	// make sure we are on the latest version of libmalino
+	if err := execCmd(true, "/usr/bin/go", "get", "github.com/malinoOS/malino/libmalino@main"); err != nil {
+		spinner.Stop()
+		return err
+	}
+
 	fmt.Println("Done.")
 
 	return nil
