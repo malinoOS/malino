@@ -19,10 +19,16 @@ In other-other words, you get to write an initramfs busybox-replacement in Go, a
 2. Clone the repository with `git clone https://github.com/malinoOS/malino`
 3. Cd into the repo and run `make`.
 4. Now malino is in /usr/bin, and you can use it.
-5. To create a new malino project, run `malino new <your project name here>`, replacing `<your project name here>` with the name of your project.
-6. To compile your project, run `malino build`.
-7. To run your project in QEMU, run `malino run`.
-8. To export your project into a .ISO file for you to run on real hardware and share, run `malino export`. If you want UEFI support, run `malino export -efi`.
+
+# How to use
+
+To create a new malino project, run `malino new <your project name here>`, replacing `<your project name here>` with the name of your project.
+
+To compile your project, run `malino build`.
+
+To run your project in QEMU, run `malino run`.
+
+To export your project into a .ISO file for you to run on real hardware and share, run `malino export`. If you want UEFI support, run `malino export -efi`.
 
 ## libmalino
 libmalino is the Go module that your OS imports, so you don't need 50 lines just to read a line from the user.
