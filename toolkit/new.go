@@ -48,11 +48,17 @@ func newProj(args []string) error {
 	err := os.WriteFile("main.go", []byte(
 		"package main\n\n"+
 			"import (\n"+
+			"	\"github.com/malinoOS/malino/libmalino\"\n"+
 			"	\"fmt\"\n"+
 			")\n\n"+
 			"func main() {\n"+
+			"	defer libmalino.resetTerminalMode()\n"+
 			"	fmt.Println(\"malino (project "+name+") booted successfully. Type a line of text to get it echoed back.\")\n"+
-			"	for {} // Word of advice: Never let this app exit. Always end in an infinite loop or shutdown.\n"+
+			"	for { // Word of advice: Never let this app exit. Always end in an infinite loop or shutdown.\n"+
+			"		fmt.Print(\"Input: \")\n"+
+			"		input := libmalino.UserLine()\n"+
+			"		fmt.Println(\"Text typed: \" + input)\n"+
+			"	}\n"+
 			"}"), 0777)
 	if err != nil {
 		spinner.Stop()
