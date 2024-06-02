@@ -2,7 +2,7 @@
 
 [discord server](https://discord.gg/2yfxxfNT6F)
 
-# malino (rewrite)
+# malino
 The malino Linux-based OS development toolkit. In other words, you get to create an OS based on the Linux kernel.
 
 In other-other words, you get to write an initramfs busybox-replacement in Go, and we take care of the annoying parts. This is your toolchain now.
