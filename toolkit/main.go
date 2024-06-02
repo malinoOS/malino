@@ -65,7 +65,7 @@ func printHelp() {
 			"malino run -serial      Runs your OS cpio with a precompiled linux, but no qemu window shows, and interacts in stdio\n" +
 			"malino export           Exports your OS into a .ISO file which can be shared or ran on real hardware BIOS machines\n" +
 			"malino export -efi		 Exports your OS into an EFI .ISO file which can be shared or ran on real hardware UEFI machines\n" +
-			"malino download-kernel  Downloads a precompiled Linux kernel.\n")
+			"malino download-kernel  Downloads the latest Ubuntu Linux kernel.\n")
 }
 
 func createAndCD(dir string) error {
@@ -186,5 +186,25 @@ func downloadFile(url string, filepath string) error {
 		return err
 	}
 
+	return nil
+}
+
+func copy(src string, dst string) error {
+	// Read all content of src to data, may cause OOM for a large file.
+	data, err := os.ReadFile(src)
+	if err != nil {
+		return err
+	}
+
+	// Ensure the destination directory exists
+	dstDir := filepath.Dir(dst)
+	if err := os.MkdirAll(dstDir, 0777); err != nil {
+		return err
+	}
+
+	// Write data to dst
+	if err := os.WriteFile(dst, data, 0777); err != nil {
+		return err
+	}
 	return nil
 }

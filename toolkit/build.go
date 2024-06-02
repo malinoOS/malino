@@ -9,6 +9,14 @@ import (
 	"github.com/briandowns/spinner"
 )
 
+type configLine struct {
+	hasAnything bool
+	err         error
+	operation   string
+	arg1        string
+	arg2        string
+}
+
 func buildProj() error {
 	// Initialize the spinner (loading thing).
 	spinner := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
@@ -63,6 +71,22 @@ func buildProj() error {
 		spinner.Stop()
 		return err
 	}
+	if _, err := os.Stat("malino.cfg"); !os.IsNotExist(err) {
+		file, err := os.ReadFile("malino.cfg")
+		if err != nil {
+			return err
+		}
+		lines := strings.Split(string(file), "\n")
+		for _, line := range lines {
+			confLine := parseConfigLine(line)
+			if confLine.err != nil {
+				return confLine.err
+			}
+			if err := handleLine(confLine); err != nil {
+				return err
+			}
+		}
+	}
 	if err := execCmd(false, "/usr/bin/bash", "-c", "find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.cpio.gz"); err != nil {
 		spinner.Stop()
 		return err
@@ -82,6 +106,58 @@ func buildProj() error {
 	}
 
 	fmt.Println("Done.")
+
+	return nil
+}
+
+func parseConfigLine(line string) configLine {
+	// check if line is empty or is a comment, if it is, just say it didn't do anything
+	if line == "" || strings.HasPrefix(line, "#") {
+		return configLine{false, nil, "", "", ""}
+	}
+	// split by spaces, throw error if there is not 3 words since that's the syntax
+	words := strings.Split(line, " ")
+	if len(words) != 3 {
+		return configLine{false, fmt.Errorf("line does not contain 3 words"), "", "", ""}
+	}
+
+	op := ""
+
+	switch words[0] {
+	case "include":
+		op = "include"
+	default:
+		return configLine{false, fmt.Errorf("invalid operation"), "", "", ""}
+	}
+
+	return configLine{true, nil, op, words[1], words[2]}
+}
+
+func handleLine(line configLine) error {
+	if !line.hasAnything {
+		return nil
+	}
+
+	switch line.operation {
+	case "include":
+		curDir := "undefined"
+		if dir, err := os.Getwd(); err != nil {
+			return err
+		} else {
+			curDir = dir
+		}
+		if strings.HasPrefix(line.arg1, "https://") {
+			if err := downloadFile(line.arg1, "file_malinoAutoDownload.tmp"); err != nil {
+				return err
+			}
+			if err := copy("file_malinoAutoDownload.tmp", curDir+"/initrd"+line.arg2); err != nil {
+				return err
+			}
+		}
+		if err := copy(line.arg1, curDir+"/initrd"+line.arg2); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
