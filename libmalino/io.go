@@ -11,7 +11,7 @@ import (
 var oldState *syscall.Termios
 
 func init() {
-	setNonCanonicalMode()
+	SetNonCanonicalMode()
 }
 
 func UserLine() string {
@@ -52,7 +52,7 @@ func ClearScreen() {
 	fmt.Print("\033[2J\033[H")
 }
 
-func setNonCanonicalMode() error {
+func SetNonCanonicalMode() error {
 	fd := int(os.Stdin.Fd())
 	var termios syscall.Termios
 	_, _, errno := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCGETS), uintptr(unsafe.Pointer(&termios)), 0, 0, 0)
