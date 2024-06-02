@@ -37,7 +37,7 @@ func buildProj() error {
 
 	fmt.Println("Getting dependencies...")
 	spinner.Start()
-	if err := execCmd(false, "/usr/bin/go", "mod", "tidy"); err != nil {
+	if err := execCmd(true, "/usr/bin/go", "mod", "tidy"); err != nil {
 		spinner.Stop()
 		return err
 	}
@@ -45,7 +45,7 @@ func buildProj() error {
 
 	fmt.Println("Builiding init...")
 	spinner.Start()
-	if err := execCmd(false, "/usr/bin/go", "build", "-o", "mInit"); err != nil {
+	if err := execCmd(true, "/usr/bin/go", "build", "-o", "mInit"); err != nil {
 		spinner.Stop()
 		return err
 	}
