@@ -70,7 +70,7 @@ func setNonCanonicalMode() error {
 	return nil
 }
 
-func resetTerminalMode() {
+func ResetTerminalMode() {
 	if oldState != nil {
 		fd := int(os.Stdin.Fd())
 		_, _, errno := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCSETS), uintptr(unsafe.Pointer(oldState)), 0, 0, 0)
