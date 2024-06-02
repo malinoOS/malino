@@ -56,7 +56,7 @@ func main() {
 
 func printHelp() {
 	fmt.Print(
-		"malino toolkit (rewrite branch) v" + Version + "\n\n" +
+		"malino toolkit v" + Version + "\n\n" +
 			"malino help        	 Shows this help menu\n" +
 			"malino new [name]  	 New project, creates folder and go module with name [name]\n" +
 			"malino new         	 New project, does not make folder, and uses the name of the folder it's executed in\n" +
