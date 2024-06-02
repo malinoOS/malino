@@ -50,6 +50,9 @@ func SpawnProcess(path string, startDir string, environmentVariables []string, f
 	}
 	var wstatus syscall.WaitStatus
 
+	args = append(args, path)
+	copy(args[1:], args)
+	args[0] = path
 	pid, err := syscall.ForkExec(path, args, procAttr)
 	if err != nil {
 		fmt.Printf("err: could not execute %v: %v\n", path, err.Error())
