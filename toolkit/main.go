@@ -114,7 +114,7 @@ func execCmd(printOutput bool, args ...string) error {
 
 	err := cmd.Run()
 	output := stdout.String()
-	if printOutput {
+	if printOutput && output != "" {
 		fmt.Println(output)
 	}
 

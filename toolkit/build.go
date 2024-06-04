@@ -25,25 +25,24 @@ func buildProj() error {
 		return fmt.Errorf("current directory does not contain a valid malino project")
 	}
 
-	fmt.Println("Removing binaries...")
+	fmt.Println(" RM initramfs.cpio.gz")
 	spinner.Start()
 	if _, err := os.Stat("initramfs.cpio.gz"); !os.IsNotExist(err) {
 		os.Remove("initramfs.cpio.gz")
 	}
 	spinner.Stop()
 
-	name := "undefined"
+	//name := "undefined"
 	curDir := "undefined"
 	if dir, err := os.Getwd(); err != nil {
 
 		return err
 	} else {
-		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
+		//name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
 		curDir = dir
 	}
-	fmt.Println("Found name: " + name)
 
-	fmt.Println("Getting dependencies...")
+	fmt.Println(" DL dependencies")
 	spinner.Start()
 	if err := execCmd(true, "/usr/bin/go", "mod", "tidy"); err != nil {
 		spinner.Stop()
@@ -51,7 +50,7 @@ func buildProj() error {
 	}
 	spinner.Stop()
 
-	fmt.Println("Builiding init...")
+	fmt.Println(" GO init")
 	spinner.Start()
 	if err := execCmd(true, "/usr/bin/go", "build", "-o", "mInit"); err != nil {
 		spinner.Stop()
@@ -61,7 +60,7 @@ func buildProj() error {
 
 	// TODO: compile other stuff
 
-	fmt.Println("Creating initramfs...")
+	fmt.Println(" MK initramfs.cpio.gz")
 	spinner.Start()
 	if err := createAndCD("initrd"); err != nil {
 		spinner.Stop()
@@ -82,8 +81,10 @@ func buildProj() error {
 			if confLine.err != nil {
 				return confLine.err
 			}
-			if err := handleLine(confLine); err != nil {
-				return err
+			if confLine.hasAnything {
+				if err := handleLine(confLine); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -95,7 +96,7 @@ func buildProj() error {
 
 	goToParentDir()
 	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
-		fmt.Println("Downloading kernel...")
+		fmt.Println(" DL vmlinuz")
 		spinner.Start()
 		getKernel()
 		spinner.Stop()
@@ -104,8 +105,6 @@ func buildProj() error {
 	if err := os.RemoveAll("initrd"); err != nil {
 		return err
 	}
-
-	fmt.Println("Done.")
 
 	return nil
 }
@@ -140,7 +139,7 @@ func handleLine(line configLine) error {
 
 	switch line.operation {
 	case "include":
-		fmt.Printf("including %v as %v in the malino system\n", line.arg1, line.arg2)
+		fmt.Printf("INC %v AS %v\n", line.arg1, line.arg2)
 		curDir := "undefined"
 		if dir, err := os.Getwd(); err != nil {
 			return err

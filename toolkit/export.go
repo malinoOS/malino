@@ -23,7 +23,6 @@ func exportProj(args []string) error {
 	} else {
 		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
 	}
-	fmt.Println("Found name: " + name)
 
 	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
 		if err := buildProj(); err != nil {
@@ -37,16 +36,18 @@ func exportProj(args []string) error {
 		}
 	}
 
-	fmt.Println("Creating folders...")
 	spinner.Start()
+	fmt.Println("MK iso")
 	if err := createAndCD("iso"); err != nil {
 		spinner.Stop()
 		return err
 	}
+	fmt.Println("MK iso/boot")
 	if err := createAndCD("boot"); err != nil {
 		spinner.Stop()
 		return err
 	}
+	fmt.Println("MK iso/boot/grub")
 	if err := createAndCD("grub"); err != nil {
 		spinner.Stop()
 		return err
@@ -56,19 +57,20 @@ func exportProj(args []string) error {
 	goToParentDir()
 	spinner.Stop()
 
-	fmt.Println("Moving files...")
 	spinner.Start()
+	fmt.Println("MV vmlinuz TO iso/boot/vmlinuz")
 	if err := os.Rename("vmlinuz", "iso/boot/vmlinuz"); err != nil {
 		spinner.Stop()
 		return err
 	}
+	fmt.Println("MV initramfs.cpio.gz TO iso/boot/initramfs.cpio.gz")
 	if err := os.Rename("initramfs.cpio.gz", "iso/boot/initramfs.cpio.gz"); err != nil {
 		spinner.Stop()
 		return err
 	}
 	spinner.Stop()
 
-	fmt.Println("Running grub...")
+	fmt.Println("  W iso/boot/grub/grub.cfg")
 	spinner.Start()
 	hasEfiArg := len(args) == 2
 	if hasEfiArg && args[1] == "-efi" {
@@ -110,6 +112,7 @@ func exportProj(args []string) error {
 		}
 	}
 
+	fmt.Println("RUN grub-mkrescue")
 	if err := execCmd(false, "grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
 		spinner.Stop()
 		return err
@@ -120,8 +123,6 @@ func exportProj(args []string) error {
 		return err
 	}
 	spinner.Stop()
-
-	fmt.Println("Done.")
 
 	return nil
 }

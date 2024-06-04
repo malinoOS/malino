@@ -27,10 +27,9 @@ func newProj(args []string) error {
 			name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
 		}
 	}
-	fmt.Println("Found name: " + name)
 
-	fmt.Println("Creating directories...")
 	spinner.Start()
+	fmt.Println(" MK " + name)
 	if hasNameArg { // root directory for project. only create if name is specified in args.
 		if err := createAndCD(name); err != nil {
 			spinner.Stop()
@@ -39,12 +38,13 @@ func newProj(args []string) error {
 	}
 	spinner.Stop()
 
-	fmt.Println("Creating Go project...")
+	fmt.Println("  W go.mod")
 	spinner.Start()
 	if err := execCmd(false, "/usr/bin/go", "mod", "init", name); err != nil { // init the go module
 		spinner.Stop()
 		return err
 	}
+	fmt.Println("  W main.go")
 	err := os.WriteFile("main.go", []byte(
 		"package main\n\n"+
 			"import (\n"+
@@ -81,8 +81,6 @@ func newProj(args []string) error {
 	if hasNameArg {
 		goToParentDir()
 	}
-
-	fmt.Println("Done.")
 
 	return nil
 }

@@ -15,6 +15,13 @@ func ShutdownComputer() {
 	syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
 }
 
+func RebootComputer() {
+	fmt.Printf("syncing disks...\n")
+	syscall.Sync()
+	fmt.Printf("shutting down...\n")
+	syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
+}
+
 func SystemUptimeAsInt() int {
 	dat, err := os.ReadFile("/proc/uptime")
 	if err != nil {
