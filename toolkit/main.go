@@ -245,3 +245,32 @@ func copyDirectory(src string, dst string) error {
 
 	return nil
 }
+
+func combineQuotedStrings(input []string) []string {
+	var result []string
+	var combined string
+	inQuotes := false
+
+	for _, part := range input {
+		if strings.HasPrefix(part, "\"") {
+			inQuotes = true
+			combined = part
+		} else if inQuotes {
+			combined += " " + part
+			if strings.HasSuffix(part, "\"") {
+				inQuotes = false
+				combined = combined[1 : len(combined)-1] // remove the quotes
+				result = append(result, combined)
+			}
+		} else {
+			result = append(result, part)
+		}
+	}
+
+	// In case the input has a dangling quote (not recommended), we add the last combined string.
+	if inQuotes {
+		result = append(result, combined)
+	}
+
+	return result
+}

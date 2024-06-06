@@ -11,6 +11,8 @@ import (
 func ShutdownComputer() {
 	fmt.Printf("syncing disks...\n")
 	syscall.Sync()
+	//fmt.Printf("unmounting disks...\n")
+	//UnmountProcFS()
 	fmt.Printf("shutting down...\n")
 	syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
 }
@@ -18,6 +20,8 @@ func ShutdownComputer() {
 func RebootComputer() {
 	fmt.Printf("syncing disks...\n")
 	syscall.Sync()
+	//fmt.Printf("unmounting disks...\n")
+	//UnmountProcFS()
 	fmt.Printf("shutting down...\n")
 	syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
 }
@@ -77,8 +81,25 @@ func SpawnProcess(path string, startDir string, environmentVariables []string, f
 	if wstatus.Exited() && errorIfExit && wstatus.ExitStatus() != 0 {
 		// Process exited
 		// Create a new error
-		fmt.Printf("err: %v exited with code %d\n", path, wstatus.ExitStatus())
+		LogError(fmt.Sprintf("%v exited with code %d", path, wstatus.ExitStatus()), "libmalino.SpawnProcess")
 		return fmt.Errorf("%v exited with code %d", path, wstatus.ExitStatus())
+	}
+	return nil
+}
+
+func MountProcFS() error {
+	if err := os.Mkdir("/proc", 0777); err != nil {
+		return err
+	}
+	if err := syscall.Mount("proc", "/proc", "proc", uintptr(0), ""); err != nil {
+		return err
+	}
+	return nil
+}
+
+func UnmountProcFS() error {
+	if err := syscall.Unmount("/proc", 0); err != nil {
+		return err
 	}
 	return nil
 }
