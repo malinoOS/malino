@@ -3,30 +3,25 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
-func runProj(args []string) error {
-	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
-		if err := buildProj(); err != nil {
-			return err
-		}
-	}
-
-	if _, err := os.Stat("initramfs.cpio.gz"); os.IsNotExist(err) {
-		if err := buildProj(); err != nil {
-			return err
-		}
-	}
-
-	hasSerialArg := len(args) == 2
-	if hasSerialArg && args[1] == "-serial" {
-		if err := execCmdDirectStdio("qemu-system-x86_64", "-kernel", "vmlinuz", "-initrd", "initramfs.cpio.gz", "-append", "console=ttyS0", "-nographic", "-m", "512M", "-enable-kvm"); err != nil {
-			return err
-		}
+func runProj() error {
+	name := "undefined"
+	if dir, err := os.Getwd(); err != nil {
+		return err
 	} else {
-		if err := execCmd(true, "qemu-system-x86_64", "-kernel", "vmlinuz", "-initrd", "initramfs.cpio.gz", "-m", "512M", "-enable-kvm"); err != nil {
+		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
+	}
+
+	if _, err := os.Stat(name + ".iso"); os.IsNotExist(err) {
+		if err := exportProj([]string{args[0], "-efi"}); err != nil {
 			return err
 		}
+	}
+
+	if err := execCmd(true, "qemu-system-x86_64", "-m", "1G", "-enable-kvm", "-cdrom", name+".iso"); err != nil {
+		return err
 	}
 
 	fmt.Println("Done.")

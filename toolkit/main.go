@@ -31,7 +31,7 @@ func main() {
 				fmt.Printf("Error while building project: %v\n", err.Error())
 			}
 		case "run":
-			if err := runProj(args); err != nil {
+			if err := runProj(); err != nil {
 				fmt.Printf("Error while running project: %v\n", err.Error())
 			}
 		case "export":
@@ -62,9 +62,8 @@ func printHelp() {
 			"malino new         	 New project, does not make folder, and uses the name of the folder it's executed in\n" +
 			"malino build       	 Builds a cpio of your OS\n" +
 			"malino run            	 Runs your OS cpio with a precompiled linux\n" +
-			"malino run -serial      Runs your OS cpio with a precompiled linux, but no qemu window shows, and interacts in stdio\n" +
 			"malino export           Exports your OS into a .ISO file which can be shared or ran on real hardware BIOS machines\n" +
-			"malino export -efi		 Exports your OS into an EFI .ISO file which can be shared or ran on real hardware UEFI machines\n" +
+			"malino export -efi		 (use this one) Exports your OS into an EFI/BIOS .ISO file which can be shared or ran on real hardware UEFI or BIOS machines\n" +
 			"malino download-kernel  Downloads the latest Ubuntu Linux kernel.\n")
 }
 

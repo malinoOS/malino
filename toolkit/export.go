@@ -77,21 +77,25 @@ func exportProj(args []string) error {
 		err := os.WriteFile("iso/boot/grub/grub.cfg", []byte(
 			"set default=0\n"+
 				"set timeout=0\n\n"+
-				"insmod efi_gop\n"+
+				"if [ \"${grub_platform}\" = \"efi\" ]; then\n"+
+				"    insmod efi_gop\n"+
+				"    insmod efi_uga\n"+
+				"else\n"+
+				"    insmod vbe\n"+
+				"fi\n"+
 				"insmod font\n"+
-				"if loadfont /boot/grub/fonts/unicode.pf2\n"+
-				"then\n"+
-				"	insmod gfxterm\n"+
-				"	set gfxmode=auto\n"+
-				"	set gfxpayload=keep\n"+
-				"	terminal_output gfxterm\n"+
+				"if loadfont /boot/grub/fonts/unicode.pf2; then\n"+
+				"    insmod gfxterm\n"+
+				"    set gfxmode=auto\n"+
+				"    set gfxpayload=keep\n"+
+				"    terminal_output gfxterm\n"+
 				"fi\n\n"+
 				"menuentry '"+name+"' --class os {\n"+
-				"	insmod gzio\n"+
-				"	insmod part_msdos\n"+
-				"	linux /boot/vmlinuz\n"+
-				"	initrd /boot/initramfs.cpio.gz\n"+
-				"}"), 0777)
+				"    insmod gzio\n"+
+				"    insmod part_msdos\n"+
+				"    linux /boot/vmlinuz\n"+
+				"    initrd /boot/initramfs.cpio.gz\n"+
+				"}\n"), 0777)
 		if err != nil {
 			spinner.Stop()
 			return err
