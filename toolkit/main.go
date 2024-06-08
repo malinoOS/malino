@@ -82,14 +82,13 @@ func createAndCD(dir string) error {
 }
 
 func goToParentDir() {
+	// Get current directory, and CD into the parent directory.
 	currentDir, err := os.Getwd()
 	if err != nil {
-		// give up, if you can't do a cd .. you shouldn't be running
 		panic(err)
 	}
 	err = os.Chdir(filepath.Dir(currentDir))
 	if err != nil {
-		// give up, if you can't do a cd .. you shouldn't be running
 		panic(err)
 	}
 }
@@ -130,37 +129,13 @@ func execCmd(printOutput bool, args ...string) error {
 }
 
 func extractWith7z(file string) error {
+	// extract a file with 7z command. if that fails, use the 7zz command. if that fails, return the error.
 	if err := execCmd(false, "7z", "x", file); err == nil {
 		return nil
 	}
 	if err := execCmd(false, "7zz", "x", file); err != nil {
 		return err
 	}
-	return nil
-}
-
-func execCmdDirectStdio(args ...string) error {
-	if len(args) == 0 {
-		return fmt.Errorf("no command provided")
-	}
-
-	// Extract the command name and arguments
-	cmdName := args[0]
-	cmdArgs := args[1:]
-
-	// Create the command with the provided arguments
-	cmd := exec.Command(cmdName, cmdArgs...)
-
-	// Set the command's standard input, output, and error to the calling process's standard input, output, and error
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("command execution failed: %v", err)
-	}
-
 	return nil
 }
 
@@ -266,7 +241,7 @@ func combineQuotedStrings(input []string) []string {
 		}
 	}
 
-	// In case the input has a dangling quote (not recommended), we add the last combined string.
+	// in case the input has a dangling quote, we add the last combined string.
 	if inQuotes {
 		result = append(result, combined)
 	}

@@ -58,8 +58,19 @@ func exportProj(args []string) error {
 	spinner.Stop()
 
 	spinner.Start()
+	// we really don't want to download vmlinuz like 300 times in one day, kernel.ubuntu.com will probably hate me if i do that
+	fmt.Println("CP vmlinuz TO vmlinuz.bak")
+	if err := copyFile("vmlinuz", "vmlinuz.bak"); err != nil {
+		spinner.Stop()
+		return err
+	}
 	fmt.Println("MV vmlinuz TO iso/boot/vmlinuz")
 	if err := os.Rename("vmlinuz", "iso/boot/vmlinuz"); err != nil {
+		spinner.Stop()
+		return err
+	}
+	fmt.Println("MV vmlinuz.bak TO vmlinuz")
+	if err := os.Rename("vmlinuz.bak", "vmlinuz"); err != nil {
 		spinner.Stop()
 		return err
 	}

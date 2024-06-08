@@ -59,9 +59,9 @@ func buildProj() error {
 		}
 	}
 
-	for _, line := range conf {
+	/*for _, line := range conf {
 		fmt.Printf("op: %v | args: %v\n", line.operation, strings.Join(line.args, " "))
-	}
+	}*/
 
 	fmt.Println(" DL dependencies")
 	spinner.Start()
