@@ -186,6 +186,7 @@ func handleIncludeLine(line configLine) error {
 		} else {
 			curDir = dir
 		}
+		line.args[0] = strings.Replace(line.args[0], ".", curDir, 1)
 		if strings.HasPrefix(line.args[0], "https://") {
 			if err := downloadFile(line.args[0], "file_malinoAutoDownload.tmp"); err != nil {
 				return err
@@ -198,7 +199,7 @@ func handleIncludeLine(line configLine) error {
 			}
 			return nil
 		}
-		if strings.HasPrefix(line.args[0], "dir...") {
+		if strings.HasPrefix(line.args[0], "dir///") {
 			if err := copyDirectory(line.args[0][6:], curDir+line.args[1]); err != nil {
 				return err
 			}
