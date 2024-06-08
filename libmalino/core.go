@@ -140,9 +140,6 @@ func UnmountProcFS() error {
 }
 
 func MountDevFS() error {
-	if err := os.Mkdir("/dev", 0777); err != nil {
-		return err
-	}
 	if err := syscall.Mount("udev", "/dev", "devtmpfs", syscall.MS_NOSUID, ""); err != nil {
 		return err
 	}
