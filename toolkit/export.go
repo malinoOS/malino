@@ -9,7 +9,7 @@ import (
 	"github.com/briandowns/spinner"
 )
 
-func exportProj(args []string) error {
+func exportProj() error {
 	// Initialize the spinner (loading thing).
 	spinner := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 
@@ -83,48 +83,31 @@ func exportProj(args []string) error {
 
 	fmt.Println("  W iso/boot/grub/grub.cfg")
 	spinner.Start()
-	hasEfiArg := len(args) == 2
-	if hasEfiArg && args[1] == "-efi" {
-		err := os.WriteFile("iso/boot/grub/grub.cfg", []byte(
-			"set default=0\n"+
-				"set timeout=0\n\n"+
-				"if [ \"${grub_platform}\" = \"efi\" ]; then\n"+
-				"    insmod efi_gop\n"+
-				"    insmod efi_uga\n"+
-				"else\n"+
-				"    insmod vbe\n"+
-				"fi\n"+
-				"insmod font\n"+
-				"if loadfont /boot/grub/fonts/unicode.pf2; then\n"+
-				"    insmod gfxterm\n"+
-				"    set gfxmode=auto\n"+
-				"    set gfxpayload=keep\n"+
-				"    terminal_output gfxterm\n"+
-				"fi\n\n"+
-				"menuentry '"+name+"' --class os {\n"+
-				"    insmod gzio\n"+
-				"    insmod part_msdos\n"+
-				"    linux /boot/vmlinuz\n"+
-				"    initrd /boot/initramfs.cpio.gz\n"+
-				"}\n"), 0777)
-		if err != nil {
-			spinner.Stop()
-			return err
-		}
-	} else {
-		err := os.WriteFile("iso/boot/grub/grub.cfg", []byte(
-			"set default=0\n"+
-				"set timeout=0\n\n"+
-				"menuentry '"+name+"' --class os {\n"+
-				"	insmod gzio\n"+
-				"	insmod part_msdos\n"+
-				"	linux /boot/vmlinuz\n"+
-				"	initrd /boot/initramfs.cpio.gz\n"+
-				"}"), 0777)
-		if err != nil {
-			spinner.Stop()
-			return err
-		}
+	err := os.WriteFile("iso/boot/grub/grub.cfg", []byte(
+		"set default=0\n"+
+			"set timeout=0\n\n"+
+			"if [ \"${grub_platform}\" = \"efi\" ]; then\n"+
+			"    insmod efi_gop\n"+
+			"    insmod efi_uga\n"+
+			"else\n"+
+			"    insmod vbe\n"+
+			"fi\n"+
+			"insmod font\n"+
+			"if loadfont /boot/grub/fonts/unicode.pf2; then\n"+
+			"    insmod gfxterm\n"+
+			"    set gfxmode=auto\n"+
+			"    set gfxpayload=keep\n"+
+			"    terminal_output gfxterm\n"+
+			"fi\n\n"+
+			"menuentry '"+name+"' --class os {\n"+
+			"    insmod gzio\n"+
+			"    insmod part_msdos\n"+
+			"    linux /boot/vmlinuz\n"+
+			"    initrd /boot/initramfs.cpio.gz\n"+
+			"}\n"), 0777)
+	if err != nil {
+		spinner.Stop()
+		return err
 	}
 
 	fmt.Println("RUN grub-mkrescue")

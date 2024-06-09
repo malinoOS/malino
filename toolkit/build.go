@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -179,14 +180,14 @@ func handleIncludeLine(line configLine) error {
 	}
 
 	if line.operation == "include" {
-		fmt.Printf("INC %v AS %v\n", line.args[0], line.args[1])
 		curDir := "undefined"
 		if dir, err := os.Getwd(); err != nil {
 			return err
 		} else {
 			curDir = dir
 		}
-		line.args[0] = strings.Replace(line.args[0], ".", curDir, 1)
+		line.args[0] = strings.Replace(line.args[0], "./", filepath.Dir(curDir)+"/", 1)
+		fmt.Printf("INC %v AS %v\n", line.args[0], line.args[1])
 		if strings.HasPrefix(line.args[0], "https://") {
 			if err := downloadFile(line.args[0], "file_malinoAutoDownload.tmp"); err != nil {
 				return err
@@ -221,7 +222,7 @@ func handleVerfmtLine(line configLine) (string, error) {
 	}
 
 	if line.operation == "verfmt" {
-		fmt.Printf("VERSION FORMAT: %v\n", line.args[0])
+		fmt.Printf("VER %v\n", line.args[0])
 		switch line.args[0] {
 		case "yymmdd":
 			return time.Now().Format("060102"), nil
