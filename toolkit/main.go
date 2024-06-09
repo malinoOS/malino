@@ -119,7 +119,7 @@ func execCmd(printOutput bool, args ...string) error {
 		lines := strings.Split(strings.TrimSpace(output), "\n")
 		if len(lines) > 0 {
 			lastLine := lines[len(lines)-1]
-			return fmt.Errorf("command execution failed: %v - last line: %s", err, lastLine)
+			return fmt.Errorf("%v: command execution failed: %v - last line: %v", strings.Join(args, " "), err, lastLine)
 		}
 		return fmt.Errorf("command execution failed: %v", err)
 	}

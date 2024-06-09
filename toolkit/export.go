@@ -13,15 +13,17 @@ func exportProj() error {
 	// Initialize the spinner (loading thing).
 	spinner := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 
-	if _, err := os.Stat("go.mod"); os.IsNotExist(err) {
-		return fmt.Errorf("current directory doesn't contain a project")
-	}
-
 	name := "undefined"
 	if dir, err := os.Getwd(); err != nil {
 		return err
 	} else {
 		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
+	}
+
+	if _, err := os.Stat("go.mod"); os.IsNotExist(err) {
+		if _, err := os.Stat(name + ".csproj"); os.IsNotExist(err) {
+			return fmt.Errorf("current directory does not contain a valid malino project")
+		}
 	}
 
 	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
