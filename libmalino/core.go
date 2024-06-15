@@ -78,11 +78,13 @@ func SpawnProcess(path string, startDir string, environmentVariables []string, f
 		}
 	}
 
-	if wstatus.Exited() && errorIfExit && wstatus.ExitStatus() != 0 {
-		// Process exited
-		// Create a new error
-		LogError(fmt.Sprintf("%v exited with code %d", path, wstatus.ExitStatus()), "libmalino.SpawnProcess")
-		return fmt.Errorf("%v exited with code %d", path, wstatus.ExitStatus())
+	if wstatus.Exited() {
+		if errorIfExit || wstatus.ExitStatus() != 0 {
+			// Process exited
+			// Create a new error
+			LogError(fmt.Sprintf("%v exited with code %d", path, wstatus.ExitStatus()), "libmalino.SpawnProcess")
+			return fmt.Errorf("%v exited with code %d", path, wstatus.ExitStatus())
+		}
 	}
 	return nil
 }

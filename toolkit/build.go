@@ -67,8 +67,8 @@ func buildProj() error {
 		if err := buildGoProj(spinner, conf); err != nil {
 			return err
 		}
-	case "c#": // C# is .NET, .NET's codename is NDP. we'll refer to C# as NDP for now.
-		if err := buildNDPProj(spinner, conf); err != nil {
+	case "c#":
+		if err := buildCSProj(spinner, conf); err != nil {
 			return err
 		}
 	}
