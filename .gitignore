@@ -1,5 +1,9 @@
 test
 malino
 malinoTk/malino
+libmalino-cs/obj
+libmalino-cs/bin
 malino-deb
 *.deb
+*.o
+*.so
