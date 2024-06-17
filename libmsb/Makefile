@@ -1,7 +1,9 @@
 .PHONY : clean
 
-CFLAGS= -fPIC -g
-LDFLAGS= -shared
+CC = clang
+
+CFLAGS = -fPIC -g
+LDFLAGS = -shared
 
 SOURCES = $(shell echo *.c)
 HEADERS = $(shell echo *.h)
