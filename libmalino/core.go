@@ -8,22 +8,22 @@ import (
 	"syscall"
 )
 
-func ShutdownComputer() {
+func ShutdownComputer() error {
 	fmt.Printf("syncing disks...\n")
 	syscall.Sync()
 	//fmt.Printf("unmounting disks...\n")
 	//UnmountProcFS()
 	fmt.Printf("shutting down...\n")
-	syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
+	return syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
 }
 
-func RebootComputer() {
+func RebootComputer() error {
 	fmt.Printf("syncing disks...\n")
 	syscall.Sync()
 	//fmt.Printf("unmounting disks...\n")
 	//UnmountProcFS()
 	fmt.Printf("shutting down...\n")
-	syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
+	return syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
 }
 
 func SystemUptimeAsInt() int {
@@ -31,7 +31,7 @@ func SystemUptimeAsInt() int {
 	if err != nil {
 		return 0
 	}
-	stringRep := strings.Split(strings.Split(string(dat), " ")[1], ".")
+	stringRep := strings.Split(strings.Split(string(dat), " ")[0], ".")
 	i, err := strconv.Atoi(stringRep[0])
 	if err != nil {
 		return 0
@@ -44,7 +44,7 @@ func SystemUptimeAsFloat() float64 {
 	if err != nil {
 		return 0
 	}
-	stringRep := strings.Split(string(dat), " ")[1]
+	stringRep := strings.Split(string(dat), " ")[0]
 	i, err := strconv.ParseFloat(stringRep, 64)
 	if err != nil {
 		return 0
@@ -52,42 +52,7 @@ func SystemUptimeAsFloat() float64 {
 	return i
 }
 
-func SpawnProcess(path string, startDir string, environmentVariables []string, files []uintptr, wait bool, errorIfExit bool, args ...string) error {
-	procAttr := &syscall.ProcAttr{
-		Dir:   startDir,
-		Env:   environmentVariables,
-		Files: files,
-		Sys:   nil,
-	}
-	var wstatus syscall.WaitStatus
-
-	args = append(args, path)
-	copy(args[1:], args)
-	args[0] = path
-	pid, err := syscall.ForkExec(path, args, procAttr)
-	if err != nil {
-		fmt.Printf("err: could not execute %v: %v\n", path, err.Error())
-		return err
-	} else {
-		if wait {
-			_, err = syscall.Wait4(pid, &wstatus, 0, nil)
-			if err != nil {
-				fmt.Printf("err: could not execute %v: %v\n", path, err.Error())
-				return err
-			}
-		}
-	}
-
-	if wstatus.Exited() {
-		if errorIfExit || wstatus.ExitStatus() != 0 {
-			// Process exited
-			return fmt.Errorf("%v exited with code %d", path, wstatus.ExitStatus())
-		}
-	}
-	return nil
-}
-
-func SpawnProcessStdioFiles(path string, startDir string, environmentVariables []string, wait bool, errorIfExit bool, args ...string) error {
+func SpawnProcess(path string, startDir string, environmentVariables []string, wait bool, args ...string) (int, error) {
 	procAttr := &syscall.ProcAttr{
 		Dir:   startDir,
 		Env:   environmentVariables,
@@ -102,53 +67,39 @@ func SpawnProcessStdioFiles(path string, startDir string, environmentVariables [
 	pid, err := syscall.ForkExec(path, args, procAttr)
 	if err != nil {
 		fmt.Printf("err: could not execute %v: %v\n", path, err.Error())
-		return err
-	} else {
-		if wait {
-			_, err = syscall.Wait4(pid, &wstatus, 0, nil)
-			if err != nil {
-				fmt.Printf("err: could not execute %v: %v\n", path, err.Error())
-				return err
-			}
+		return -1, err
+	}
+
+	if wait {
+		_, err = syscall.Wait4(pid, &wstatus, 0, nil)
+		if err != nil {
+			fmt.Printf("err: could not execute %v: %v\n", path, err.Error())
+			return -1, err
+		}
+
+		if wstatus.Exited() {
+			return wstatus.ExitStatus(), nil
 		}
 	}
 
-	if wstatus.Exited() {
-		if errorIfExit || wstatus.ExitStatus() != 0 {
-			// Process exited
-			return fmt.Errorf("%v exited with code %d", path, wstatus.ExitStatus())
-		}
-	}
-	return nil
+	return 0, nil
 }
 
 func MountProcFS() error {
 	if err := os.Mkdir("/proc", 0777); err != nil {
 		return err
 	}
-	if err := syscall.Mount("proc", "/proc", "proc", uintptr(0), ""); err != nil {
-		return err
-	}
-	return nil
+	return syscall.Mount("proc", "/proc", "proc", uintptr(0), "")
 }
 
 func UnmountProcFS() error {
-	if err := syscall.Unmount("/proc", 0); err != nil {
-		return err
-	}
-	return nil
+	return syscall.Unmount("/proc", 0)
 }
 
 func MountDevFS() error {
-	if err := syscall.Mount("udev", "/dev", "devtmpfs", syscall.MS_NOSUID, ""); err != nil {
-		return err
-	}
-	return nil
+	return syscall.Mount("udev", "/dev", "devtmpfs", syscall.MS_NOSUID, "")
 }
 
 func UnmountDevFS() error {
-	if err := syscall.Unmount("/dev", 0); err != nil {
-		return err
-	}
-	return nil
+	return syscall.Unmount("/dev", 0)
 }

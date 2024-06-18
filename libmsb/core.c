@@ -8,20 +8,77 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <linux/reboot.h>
+#include <sys/syscall.h>
 #include "core.h"
+#include <stdint.h>
+#include <sys/wait.h>
+#include <sys/mount.h>
+#include <stdbool.h>
+#include <errno.h>
 
 void msb_sync() {
-    syscall(0xa2);
+    sync();
 }
 
-long msb_reboot(unsigned int cmd) {
-    return syscall(0xa9, 0xfee1dead, 0x28121969, cmd);
+int msb_reboot(uint32_t cmd) {
+    if (syscall(SYS_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, cmd) == -1)
+        return errno;
+    return 0;
 }
 
-long msb_write(unsigned int fd, const char *buf) {
-    return syscall(0x01, fd, buf, strlen(buf));
+long msb_write(uint32_t fd, const char *_Nonnull buf) {
+    if (write(fd, buf, strlen(buf)) == -1)
+        return -errno;
+    return 0;
 }
 
-long msb_read(unsigned int fd, char *buf, unsigned long count) {
-    return syscall(0, fd, buf, count);
+long msb_read(uint32_t fd, char *_Nonnull buf, uint64_t count) {
+    if (read(fd, buf, count) == -1)
+        return -errno;
+    return 0;
+}
+
+int msb_mount(const char *_Nonnull source, const char *_Nonnull target, const char *_Nonnull fstype, uint64_t flags, const void *_Nullable data) {
+    if (mount(source, target, fstype, flags, data) == -1)
+        return errno;
+    return 0;
+}
+
+int msb_umount2(const char *_Nonnull target, int flags) {
+    if (umount2(target, flags) == -1)
+        return errno;
+    return 0;
+}
+
+pid_t msb_getpid() {
+    return getpid();
+}
+
+int msb_forkexec(const char *_Nonnull path, char *const _Nullable argv[], char *const _Nullable envp[], bool wait) {
+    pid_t pid = syscall(SYS_fork);
+    if (pid < 0) {
+        return -errno;
+    } else if (pid == 0) {
+        // Child process
+        execve(path, argv, envp);
+        return -errno;
+    } else {
+        // Parent Process
+        if (wait) {
+            int status;
+            if (waitpid(pid, &status, 0) == -1)
+                return -errno;
+
+            if (WIFEXITED(status)) 
+                return WEXITSTATUS(status);
+
+            else if (WIFSIGNALED(status))
+                return WTERMSIG(status);
+
+            else
+                return -42; // ENOMSG
+        }
+        return 0;
+    }
 }

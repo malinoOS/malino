@@ -9,19 +9,18 @@ help:
 	@printf "malino Makefile\n\n"
 	@printf "make stable - Builds malino, and creates a debian package file\n"
 	@printf "make dev    - Builds malino, and installs it onto the current system\n"
-	@printf "make deps   - !THIS ONLY WORKS ON DEBIAN-BASED DISTROS! Installs dependencies needed for malino to build.\n"
+	@printf "make dotnet - Installs .NET 8.0, so that a part of malino can build correctly.\n"
 
 # stable target builds the toolkit and creates a debian package file
 stable: toolkit libmsb libmalino-cs deb cleanallsubs
 # dev target is for during development, it makes the toolkit and installs it every time
 dev: toolkit libmsb libmalino-cs install cleanallsubs
 # deps target installs dependencies needed for malino to build, only works on debian
-deps:
+dotnet:
 	wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
 	chmod +x ./dotnet-install.sh
 	./dotnet-install.sh --channel 8.0
 	rm ./dotnet-install.sh
-	sudo apt install golang-go qemu-system-x86 p7zip
 
 toolkit:
 	@echo " GO malino"

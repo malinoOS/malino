@@ -104,7 +104,7 @@ func exportProj() error {
 			"menuentry '"+name+"' --class os {\n"+
 			"    insmod gzio\n"+
 			"    insmod part_msdos\n"+
-			"    linux /boot/vmlinuz\n"+
+			"    linux /boot/vmlinuz DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1\n"+
 			"    initrd /boot/initramfs.cpio.gz\n"+
 			"}\n"), 0777)
 	if err != nil {

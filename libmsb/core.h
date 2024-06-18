@@ -9,9 +9,17 @@
     Copyleft 2024 malino. This code is licensed under GPL2.
 */
 
+#include <stdint.h>
+#include <unistd.h>
+#include <stdbool.h>
+
 void msb_sync();
-long msb_reboot(unsigned int cmd);
-long msb_write(unsigned int fd, const char *buf);
-long msb_read(unsigned int fd, char *buf, unsigned long count);
+int msb_reboot(uint32_t cmd);
+long msb_write(uint32_t fd, const char *_Nonnull buf);
+long msb_read(uint32_t fd, char *_Nonnull buf, uint64_t count);
+int msb_mount(const char *_Nonnull source, const char *_Nonnull target, const char *_Nonnull fstype, uint64_t flags, const void *_Nullable data);
+int msb_umount2(const char *_Nonnull target, int flags);
+pid_t msb_getpid();
+int msb_forkexec(const char *_Nonnull path, char *const _Nullable argv[_Nullable], char *const _Nullable envp[_Nullable], bool wait);
 
 #endif
