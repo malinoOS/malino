@@ -20,10 +20,8 @@ func exportProj() error {
 		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
 	}
 
-	if _, err := os.Stat("go.mod"); os.IsNotExist(err) {
-		if _, err := os.Stat(name + ".csproj"); os.IsNotExist(err) {
-			return fmt.Errorf("current directory does not contain a valid malino project")
-		}
+	if _, err := os.Stat("malino.cfg"); os.IsNotExist(err) {
+		return fmt.Errorf("current directory does not contain a valid malino project")
 	}
 
 	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
@@ -57,9 +55,7 @@ func exportProj() error {
 	goToParentDir()
 	goToParentDir()
 	goToParentDir()
-	spinner.Stop()
 
-	spinner.Start()
 	// we really don't want to download vmlinuz like 300 times in one day, kernel.ubuntu.com will probably hate me if i do that
 	fmt.Println("CP vmlinuz TO vmlinuz.bak")
 	if err := copyFile("vmlinuz", "vmlinuz.bak"); err != nil {
@@ -81,10 +77,8 @@ func exportProj() error {
 		spinner.Stop()
 		return err
 	}
-	spinner.Stop()
 
 	fmt.Println("  W iso/boot/grub/grub.cfg")
-	spinner.Start()
 	err := os.WriteFile("iso/boot/grub/grub.cfg", []byte(
 		"set default=0\n"+
 			"set timeout=0\n\n"+

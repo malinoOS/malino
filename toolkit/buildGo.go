@@ -13,10 +13,8 @@ func buildGoProj(spinner *spinner.Spinner, conf []configLine) error {
 		spinner.Stop()
 		return err
 	}
-	spinner.Stop()
 
 	fmt.Println(" GO init")
-	spinner.Start()
 	buildFlagsExist := false
 	for _, line := range conf {
 		if line.operation == "buildflags" {

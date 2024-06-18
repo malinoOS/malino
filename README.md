@@ -1,37 +1,35 @@
-<img src="https://winksplorer.net/malino.png" width="250">
+<p align="center"><img src="https://winksplorer.net/malino-whitetext.png" width="500"></p>
 
-[discord server](https://discord.gg/2yfxxfNT6F)
+<p align="center">
+<a href="https://discord.gg/2yfxxfNT6F">
+    <img src="https://img.shields.io/badge/discord-server-blue?style=for-the-badge&logo=discord">
+</a>
+<img src="https://img.shields.io/github/languages/code-size/malinoOS/malino?style=for-the-badge&logo=files"/>
+<a href="https://github.com/malinoOS/malino/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/malinoOS/malino?style=for-the-badge&logo=gnu"/>
+</a>
+</p>
 
-# malino
-The malino Linux-based OS development toolkit. In other words, you get to create an OS based on the Linux kernel.
+## How to install
+### [GitHub Wiki: Installation](https://github.com/malinoOS/malino/wiki/Installation)
 
-In other-other words, you get to write an initramfs busybox-replacement in Go, and we take care of the annoying parts. This is your toolchain now.
+## How to use
+### [GitHub Wiki: Toolkit usage](https://github.com/malinoOS/malino/wiki/Toolkit-usage)
 
-# How to install
-> malino is for linux only.
-
-## From the debian package
-1. Download the .deb file from the releases tab.
-2. Run `sudo dpkg -i ~/Downloads/malino-stable-*`.
-
-## From source
-1. Download requirements. On Debian-based distros, run `sudo apt install golang-go qemu-system-x86 qemu-utils p7zip`.
-2. Clone the repository with `git clone https://github.com/malinoOS/malino`
-3. Cd into the repo and run `make`.
-4. Now malino is in /usr/bin, and you can use it.
-
-# How to use
-
-To create a new malino project, run `malino new <your project name here>`, replacing `<your project name here>` with the name of your project.
-
-To compile your project, run `malino build`.
-
-To run your project in QEMU, run `malino run`.
-
-To export your project into a .ISO file for you to run on real hardware and share, run `malino export`. If you want UEFI support, run `malino export -efi`.
+# Directory structure
 
 ## libmalino
 libmalino is the Go module that your OS imports, so you don't need 50 lines just to read a line from the user.
+
+Include it in your Go file with `import "github.com/malinoOS/malino/libmalino"`.
+
+## libmalino-cs
+libmalino-cs is libmalino but for C#. It uses .NET 8.0 to compile, and is placed in `/opt/malino/libmalino-cs.dll`.
+
+malino automatically "links" libmalino-cs with your project if you have your project configured to build for C#.
+
+## libmsb
+MSB stands for "Malino Syscall Bridge". This is only used with C# projects, and it's used to allow C# to make Linux system calls, since for some reason it can't by default. And it uses `clang` to build since this is a syscall bridge and must be written in C.
 
 ## malino
 malino is the toolkit and command you use to create projects, build, export, etc...

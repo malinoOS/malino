@@ -39,7 +39,7 @@ libmalino-cs:
 cleanallsubs:
 	@rm -f libmsb/*.o libmsb/libmsb.so
 
-	@rm -f libmalino-cs/libmalino-cs.dll libmalino-cs/libmalino-cs.deps.json libmalino-cs/libmalino-cs.pdb
+	@rm -f libmalino-cs/libmalino-cs.dll libmalino-cs/libmalino-cs.deps.json libmalino-cs/libmalino-cs.pdb libmalino-cs/libmalino-cs.xml
 	@rm -rf libmalino-cs/bin
 	@rm -rf libmalino-cs/obj
 
