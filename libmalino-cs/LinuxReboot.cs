@@ -1,5 +1,9 @@
 namespace libmalino;
 
+/// <summary>
+/// An implementation of C's linux/reboot.h.
+/// </summary>
+#pragma warning disable CS1591
 public enum LINUX_REBOOT : uint
 {
     MAGIC1 = 0xfee1dead,
@@ -17,3 +21,4 @@ public enum LINUX_REBOOT : uint
     CMD_SW_SUSPEND = 0xD000FCE2,
     CMD_KEXEC = 0x45584543
 }
+#pragma warning restore CS1591

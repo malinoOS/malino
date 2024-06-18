@@ -28,15 +28,17 @@ int msb_reboot(uint32_t cmd) {
 }
 
 long msb_write(uint32_t fd, const char *_Nonnull buf) {
-    if (write(fd, buf, strlen(buf)) == -1)
+    long w = write(fd, buf, strlen(buf));
+    if (w == -1)
         return -errno;
-    return 0;
+    return w;
 }
 
 long msb_read(uint32_t fd, char *_Nonnull buf, uint64_t count) {
-    if (read(fd, buf, count) == -1)
+    long r = read(fd, buf, count);
+    if (r == -1)
         return -errno;
-    return 0;
+    return r;
 }
 
 int msb_mount(const char *_Nonnull source, const char *_Nonnull target, const char *_Nonnull fstype, uint64_t flags, const void *_Nullable data) {

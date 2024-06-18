@@ -7,3 +7,4 @@ malino-deb
 *.deb
 *.o
 *.so
+testOS

@@ -6,7 +6,9 @@ namespace libmalino;
 /// <summary>
 /// Core functions.
 /// </summary>
-public class malino {
+#pragma warning disable CS8981
+public class malino { // stfu c#, that's the naming style of malino
+#pragma warning restore CS8981
     /// <summary>
     /// Syncs filesystems then shuts down the computer. If it fails then it will throw an exception of the Errno message.
     /// </summary>
@@ -50,7 +52,9 @@ public class malino {
     }
 
     /// <summary>
-    /// chdirs into a directory, and spawns a process there, without killing the parent process.
+    /// Spawns a process on the system.
+    ///
+    /// Returns: if wait=true, the return code, if wait=false, 0. This will throw an exception of the errno message if an error happened while spawning the process.
     /// </summary>
     public static int SpawnProcess(string path, string startDir, string[] environmentVariables, bool wait, string[] args) {
         Directory.SetCurrentDirectory(startDir);
@@ -62,9 +66,12 @@ public class malino {
     }
 
     /// <summary>
-    /// Mounts /proc. /proc is recommended if you want your OS to like, do stuff.
+    /// Mounts /proc. /proc is recommended if you want your OS to like do stuff.
     /// </summary>
     public static void MountProcFS() {
+        // C#: hmm yes, let's make a warning about creating a folder, and not about the linux system call in this function
+        // I know this isn't supported by windows, stfu dotnet
+        #pragma warning disable CA1416
         Directory.CreateDirectory("/proc", UnixFileMode.UserRead 
                 | UnixFileMode.UserWrite 
                 | UnixFileMode.UserExecute 
@@ -74,6 +81,7 @@ public class malino {
                 | UnixFileMode.OtherRead 
                 | UnixFileMode.OtherWrite 
                 | UnixFileMode.OtherExecute); // C# moment
+        #pragma warning restore CA1416
 
         int val = MsbBindings.Mount("proc", "/proc", "proc", 0, "");
         if (val != 0)
@@ -90,7 +98,7 @@ public class malino {
     }
 
     /// <summary>
-    /// Mounts /dev. /dev is also recommended if you want your OS to like, do stuff.
+    /// Mounts /dev. /dev is also recommended if you want your OS to like do stuff.
     /// </summary>
     public static void MountDevFS() {
         int val = MsbBindings.Mount("udev", "/dev", "devtmpfs", 2, ""); // 2 = MS_NOSUID

@@ -79,7 +79,7 @@ public class MsbBindings
     public static extern int Unmount(string target, int flags);
 
     /// <summary>
-    /// A bind for getpid() in libc: https://man7.org/linux/man-pages/man2/umount2.2.html.
+    /// A bind for getpid() in libc: https://man7.org/linux/man-pages/man2/getpid.2.html.
     ///
     /// This should never fail.
     /// </summary>
@@ -87,7 +87,7 @@ public class MsbBindings
     public static extern int GetPID();
 
     /// <summary>
-    /// A combination of fork() and execve() in libc.
+    /// A combination of fork() (https://man7.org/linux/man-pages/man2/fork.2.html) and execve() (https://man7.org/linux/man-pages/man2/execve.2.html) in libc.
     ///
     /// If successful AND wait=true, it will return the status code of the application after it has exited.
     /// IF successful AND wait=false, it will return 0.
