@@ -1,20 +1,33 @@
-<p align="center"><img src="https://winksplorer.net/malino-whitetext.png" width="500"></p>
+<p align="center"><img src="https://github.com/malinoOS/malino/assets/49623720/c764dd50-c0cd-4440-993a-49373ebba912" width="500"></p>
 
 <p align="center">
-<a href="https://discord.gg/2yfxxfNT6F">
-    <img src="https://img.shields.io/badge/discord-server-blue?style=for-the-badge&logo=discord">
-</a>
+<a href="https://discord.gg/2yfxxfNT6F"><img src="https://img.shields.io/badge/chat-on_discord-blue?style=for-the-badge&logo=discord"></a>
 <img src="https://img.shields.io/github/languages/code-size/malinoOS/malino?style=for-the-badge&logo=files"/>
-<a href="https://github.com/malinoOS/malino/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/malinoOS/malino?style=for-the-badge&logo=gnu"/>
-</a>
+<a href="https://github.com/malinoOS/malino/releases/latest"><img src="https://img.shields.io/github/v/release/malinoOS/malino?style=for-the-badge&logo=debian" /></a>
+<a href="https://github.com/malinoOS/malino/blob/master/LICENSE"><img src="https://img.shields.io/github/license/malinoOS/malino?style=for-the-badge&logo=gnu"/></a>
 </p>
 
-## How to install
-### [GitHub Wiki: Installation](https://github.com/malinoOS/malino/wiki/Installation)
+### malino is a toolkit that allows people to create their own operating systems, easily.
 
-## How to use
-### [GitHub Wiki: Toolkit usage](https://github.com/malinoOS/malino/wiki/Toolkit-usage)
+#### It supports both Go & C#, and you get to use Linux as your base.
+
+#### And also has a library that helps you make an OS with the toolkit.
+
+## Features
+
+- Direct Linux system call access
+- Advanced file system, supports many filesystems, and works on real hardware
+- Most features found in both the C# and Go standard library
+- BIOS & EFI support on real hardware, almost all features work on real hardware
+- Framebuffer support to the point where it can [run DOOM](https://github.com/malinoOS/doomOS).
+- Including files in the file system, allows lots of apps (with their required libraries) to be ran (including apps like `ffmpeg`)
+
+
+### How to install
+#### [GitHub Wiki: Installation](https://github.com/malinoOS/malino/wiki/Installation)
+
+### How to use
+#### [GitHub Wiki: Toolkit usage](https://github.com/malinoOS/malino/wiki/Toolkit-usage)
 
 # Directory structure
 
