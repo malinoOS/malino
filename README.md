@@ -21,7 +21,7 @@
 - Advanced file system, supports many filesystems, and works on real hardware
 - Most features found in both the C# and Go standard library
 - BIOS & EFI support on real hardware, almost all features work on real hardware
-- Framebuffer support to the point where it can [run DOOM](https://github.com/malinoOS/doomOS).
+- Framebuffer support to the point where it can [run DOOM](https://youtu.be/JERv-ocRCW4).
 - Including files in the system, allows lots of apps (with their libraries) to be ran (including apps like `ffmpeg`)
 - Faster than Cosmos in almost every way
 
