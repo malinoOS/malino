@@ -65,6 +65,8 @@ func buildProj() error {
 		if err := buildCSProj(spinner, conf); err != nil {
 			return err
 		}
+	default:
+		return fmt.Errorf("malino.cfg: line 1: invalid language")
 	}
 
 	// TODO: compile other stuff
@@ -77,6 +79,7 @@ func buildProj() error {
 		return err
 	}
 	if err := os.Rename(curDir+"/mInit", curDir+"/initrd/init"); err != nil {
+		os.RemoveAll("initrd")
 		spinner.Stop()
 		return err
 	}
@@ -86,6 +89,7 @@ func buildProj() error {
 		}
 	}
 	if err := execCmd(false, "/usr/bin/bash", "-c", "find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.cpio.gz"); err != nil {
+		os.RemoveAll("initrd")
 		spinner.Stop()
 		return err
 	}
@@ -95,6 +99,7 @@ func buildProj() error {
 		fmt.Println(" DL vmlinuz")
 		spinner.Start()
 		if err := getKernel(); err != nil {
+			os.RemoveAll("initrd")
 			return err
 		}
 		spinner.Stop()

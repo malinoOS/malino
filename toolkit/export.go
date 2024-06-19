@@ -44,11 +44,13 @@ func exportProj() error {
 	}
 	fmt.Println("MK iso/boot")
 	if err := createAndCD("boot"); err != nil {
+		os.RemoveAll("iso")
 		spinner.Stop()
 		return err
 	}
 	fmt.Println("MK iso/boot/grub")
 	if err := createAndCD("grub"); err != nil {
+		os.RemoveAll("iso")
 		spinner.Stop()
 		return err
 	}
@@ -59,21 +61,25 @@ func exportProj() error {
 	// we really don't want to download vmlinuz like 300 times in one day, kernel.ubuntu.com will probably hate me if i do that
 	fmt.Println("CP vmlinuz TO vmlinuz.bak")
 	if err := copyFile("vmlinuz", "vmlinuz.bak"); err != nil {
+		os.RemoveAll("iso")
 		spinner.Stop()
 		return err
 	}
 	fmt.Println("MV vmlinuz TO iso/boot/vmlinuz")
 	if err := os.Rename("vmlinuz", "iso/boot/vmlinuz"); err != nil {
+		os.RemoveAll("iso")
 		spinner.Stop()
 		return err
 	}
 	fmt.Println("MV vmlinuz.bak TO vmlinuz")
 	if err := os.Rename("vmlinuz.bak", "vmlinuz"); err != nil {
+		os.RemoveAll("iso")
 		spinner.Stop()
 		return err
 	}
 	fmt.Println("MV initramfs.cpio.gz TO iso/boot/initramfs.cpio.gz")
 	if err := os.Rename("initramfs.cpio.gz", "iso/boot/initramfs.cpio.gz"); err != nil {
+		os.RemoveAll("iso")
 		spinner.Stop()
 		return err
 	}
@@ -102,14 +108,22 @@ func exportProj() error {
 			"    initrd /boot/initramfs.cpio.gz\n"+
 			"}\n"), 0777)
 	if err != nil {
+		os.RemoveAll("iso")
 		spinner.Stop()
 		return err
 	}
 
 	fmt.Println("RUN grub-mkrescue")
-	if err := execCmd(false, "grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
-		spinner.Stop()
-		return err
+	if err := execCmd(true, "grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
+		fmt.Println("RUN /usr/bin/grub-mkrescue")
+		if err := execCmd(true, "/usr/bin/grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
+			fmt.Println("RUN /bin/grub-mkrescue")
+			if err := execCmd(true, "/bin/grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
+				os.RemoveAll("iso")
+				spinner.Stop()
+				return err
+			}
+		}
 	}
 
 	if err := os.RemoveAll("iso"); err != nil {

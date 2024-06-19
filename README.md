@@ -13,6 +13,8 @@
 
 #### And also has a library that helps you make an OS with the toolkit.
 
+##### (in beta)
+
 ## Features
 
 - Direct Linux system call access
@@ -20,7 +22,8 @@
 - Most features found in both the C# and Go standard library
 - BIOS & EFI support on real hardware, almost all features work on real hardware
 - Framebuffer support to the point where it can [run DOOM](https://github.com/malinoOS/doomOS).
-- Including files in the file system, allows lots of apps (with their required libraries) to be ran (including apps like `ffmpeg`)
+- Including files in the system, allows lots of apps (with their libraries) to be ran (including apps like `ffmpeg`)
+- Faster than Cosmos in almost every way
 
 
 ### How to install

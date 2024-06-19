@@ -28,7 +28,7 @@ func parseConfigLine(line string, lineNum int) configLine {
 	switch words[0] {
 	case "include":
 		if len(words) != 3 {
-			return configLine{false, fmt.Errorf("%v: line does not contain 3 words, which is required for include operation", lineNum), "", nil}
+			return configLine{false, fmt.Errorf("malino.cfg: line %v: line does not contain 3 words, which is required for include operation", lineNum), "", nil}
 		}
 		op = "include"
 
@@ -37,18 +37,18 @@ func parseConfigLine(line string, lineNum int) configLine {
 
 	case "verfmt":
 		if len(words) != 2 {
-			return configLine{false, fmt.Errorf("%v: line does not contain 2 words, which is required for verfmt operation", lineNum), "", nil}
+			return configLine{false, fmt.Errorf("malino.cfg: line %v: line does not contain 2 words, which is required for verfmt operation", lineNum), "", nil}
 		}
 		op = "verfmt"
 
 	case "lang":
 		if len(words) != 2 {
-			return configLine{false, fmt.Errorf("%v: line does not contain 2 words, which is required for lang operation", lineNum), "", nil}
+			return configLine{false, fmt.Errorf("malino.cfg: line %v: line does not contain 2 words, which is required for lang operation", lineNum), "", nil}
 		}
 		op = "lang"
 
 	default:
-		return configLine{false, fmt.Errorf("invalid operation"), "", nil}
+		return configLine{false, fmt.Errorf("malino.cfg: line %v: invalid operation", lineNum), "", nil}
 	}
 
 	return configLine{true, nil, op, words[1:]}

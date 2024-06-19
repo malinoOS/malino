@@ -84,3 +84,7 @@ int msb_forkexec(const char *_Nonnull path, char *const _Nullable argv[], char *
         return 0;
     }
 }
+
+long msb_dsc(long rax, long rdi, long rsi, long rdx, long r10, long r8, long r9) {
+    return syscall(rax,rdi,rsi,rdx,r10,r8,r9);
+}
