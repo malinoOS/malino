@@ -22,6 +22,8 @@ dotnet:
 	chmod +x ./dotnet-install.sh
 	./dotnet-install.sh --channel 8.0
 	rm ./dotnet-install.sh
+	echo -e "\nexport PATH=\"$^PATH:/home/$(shell whoami)/.dotnet\"" >> .bashrc
+	echo -e "\nexport PATH=\"$^PATH:/home/$(shell whoami)/.dotnet\"" >> .zshrc
 
 uninst:
 	@echo " RM /usr/bin/malino"
