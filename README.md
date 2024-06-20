@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/malinoOS/malino/assets/49623720/c764dd50-c0cd-4440-993a-49373ebba912" width="500"></p>
+<p align="center"><img src="https://github.com/malinoOS/malino/assets/49623720/c764dd50-c0cd-4440-993a-49373ebba912" width="400"></p>
 
 <p align="center">
 <a href="https://discord.gg/2yfxxfNT6F"><img src="https://img.shields.io/badge/chat-on_discord-blue?style=for-the-badge&logo=discord"></a>
