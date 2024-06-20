@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -29,85 +30,84 @@ func getKernel() error {
 		return err
 	}
 
-	// Find the last <a> element
-	var lastLink string
+	// Find all <a> elements and store them in a slice
+	var links []string
 	doc.Find("a").Each(func(i int, s *goquery.Selection) {
-		lastLink, _ = s.Attr("href")
+		link, _ := s.Attr("href")
+		links = append(links, link)
 	})
 
-	// Make sure the last link is a full URL
-	lastLinkURL := mainURL + lastLink
+	// Iterate through the links in reverse order
+	for i := len(links) - 1; i >= 0; i-- {
+		linkURL := mainURL + links[i]
 
-	// Fetch the last link page
-	res, err = http.Get(lastLinkURL)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("status code %d", res.StatusCode)
-	}
-
-	// Parse the last link page
-	doc, err = goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return err
-	}
-
-	// Find the fourth <a> element
-	var fourthLink string
-	doc.Find("a").EachWithBreak(func(i int, s *goquery.Selection) bool {
-		if i == 3 { // since indices are 0-based, 3 is the fourth element
-			fourthLink, _ = s.Attr("href")
-			return false // stop iteration
+		// Fetch the link page
+		res, err = http.Get(linkURL)
+		if err != nil {
+			return err
 		}
-		return true // continue iteration
-	})
+		defer res.Body.Close()
 
-	// Make sure the fourth link is a full URL
-	fourthLinkURL := lastLinkURL + fourthLink
+		if res.StatusCode != http.StatusOK {
+			return fmt.Errorf("status code %d", res.StatusCode)
+		}
 
-	// least annoying error handling in go
-	if err := downloadFile(fourthLinkURL, "kernel.deb"); err != nil {
-		return err
+		// Parse the link page
+		doc, err = goquery.NewDocumentFromReader(res.Body)
+		if err != nil {
+			return err
+		}
+
+		// Check if the page contains the text "Test amd64 missing"
+		pageHTML, _ := doc.Html()
+		if !strings.Contains(pageHTML, "Test amd64 missing") {
+			// If the page does not contain the text, process the link and stop the loop
+			fourthLink, _ := doc.Find("a").Eq(3).Attr("href") // get the fourth link
+			fourthLinkURL := linkURL + fourthLink
+
+			// least annoying error handling in go
+			if err := downloadFile(fourthLinkURL, "kernel.deb"); err != nil {
+				return err
+			}
+
+			if err := extractWith7z("kernel.deb"); err != nil {
+				return err
+			}
+
+			if err := extractWith7z("data.tar"); err != nil {
+				return err
+			}
+
+			if err := moveBootContentToVmlinuz(); err != nil {
+				return err
+			}
+
+			if err := os.RemoveAll("boot"); err != nil {
+				return err
+			}
+
+			if err := os.RemoveAll("usr"); err != nil {
+				return err
+			}
+
+			if err := os.Remove("control.tar"); err != nil {
+				return err
+			}
+
+			if err := os.Remove("data.tar"); err != nil {
+				return err
+			}
+
+			if err := os.Remove("kernel.deb"); err != nil {
+				return err
+			}
+
+			fmt.Println("Done.")
+			return nil
+		}
 	}
 
-	if err := extractWith7z("kernel.deb"); err != nil {
-		return err
-	}
-
-	if err := extractWith7z("data.tar"); err != nil {
-		return err
-	}
-
-	if err := moveBootContentToVmlinuz(); err != nil {
-		return err
-	}
-
-	if err := os.RemoveAll("boot"); err != nil {
-		return err
-	}
-
-	if err := os.RemoveAll("usr"); err != nil {
-		return err
-	}
-
-	if err := os.Remove("control.tar"); err != nil {
-		return err
-	}
-
-	if err := os.Remove("data.tar"); err != nil {
-		return err
-	}
-
-	if err := os.Remove("kernel.deb"); err != nil {
-		return err
-	}
-
-	fmt.Println("Done.")
-
-	return nil
+	return fmt.Errorf("no suitable link found")
 }
 
 func moveBootContentToVmlinuz() error {

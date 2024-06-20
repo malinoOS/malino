@@ -15,12 +15,12 @@ func runProj() error {
 	}
 
 	if _, err := os.Stat(name + ".iso"); os.IsNotExist(err) {
-		if err := exportProj(); err != nil {
+		if err := buildProj(); err != nil {
 			return err
 		}
 	}
 
-	if err := execCmd(true, "qemu-system-x86_64", "-m", "1G", "-enable-kvm", "-cdrom", name+".iso"); err != nil {
+	if err := execCmd(true, "qemu-system-x86_64", "-m", "2G", "-enable-kvm", "-cdrom", name+".iso"); err != nil {
 		return err
 	}
 
