@@ -97,7 +97,7 @@ func DownloadCSCompiler(homeDirectory string) error {
 		return err
 	}
 
-	if err := os.Remove("bflat.tar.gz"); err != nil {
+	if err := os.Remove("bflat.tar.g.z"); err != nil {
 		return err
 	}
 

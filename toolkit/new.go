@@ -74,6 +74,7 @@ func newProj(args []string) error {
 				"include /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so.2\n"+
 				"include /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6\n"+
 				"include /lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2\n"+
+				"include /usr/lib/x86_64-linux-gnu/libm.so.6 /usr/lib/x86_64-linux-gnu/libm.so.6\n"+
 				"include /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux-gnu/libpthread.so.0\n"), 0777)
 		if err != nil {
 			spinner.Stop()
@@ -156,6 +157,7 @@ func newProj(args []string) error {
 				"include /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6\n"+
 				"include /lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2\n"+
 				"include /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux-gnu/libpthread.so.0\n"+
+				"include /usr/lib/x86_64-linux-gnu/libm.so.6 /usr/lib/x86_64-linux-gnu/libm.so.6\n"+
 				"include /opt/malino/libmsb.so /lib/libmsb.so\n"), 0777)
 		if err != nil {
 			spinner.Stop()

@@ -60,13 +60,13 @@ public class malino { // stfu c#, that's the naming style of malino
         Directory.SetCurrentDirectory(startDir);
         int val = MsbBindings.ForkExec(path, args, environmentVariables, wait);
         if (val < 0)
-            throw new Exception(Errno.GetStringErr(val));
+            throw new Exception(Errno.GetStringErr(-val));
         else
             return val;
     }
 
     /// <summary>
-    /// Mounts /proc. /proc is recommended if you want your OS to like do stuff.
+    /// Mounts /proc. /proc is recommended if you want your OS to do stuff.
     /// </summary>
     public static void MountProcFS() {
         // C#: hmm yes, let's make a warning about creating a folder, and not about the linux system call in this function
@@ -98,7 +98,7 @@ public class malino { // stfu c#, that's the naming style of malino
     }
 
     /// <summary>
-    /// Mounts /dev. /dev is also recommended if you want your OS to like do stuff.
+    /// Mounts /dev. /dev is also recommended if you want your OS to do stuff.
     /// </summary>
     public static void MountDevFS() {
         int val = MsbBindings.Mount("udev", "/dev", "devtmpfs", 2, ""); // 2 = MS_NOSUID
