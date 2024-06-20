@@ -10,6 +10,7 @@ help:
 	@printf "make stable - Builds malino, and creates a debian package file\n"
 	@printf "make dev    - Builds malino, and installs it onto the current system\n"
 	@printf "make dotnet - Installs .NET 8.0, so that a part of malino can build correctly.\n"
+	@printf "make uninst - Uninstalls malino if you built with `make dev`\n"
 
 # stable target builds the toolkit and creates a debian package file
 stable: toolkit libmsb libmalino-cs deb cleanallsubs
@@ -21,6 +22,12 @@ dotnet:
 	chmod +x ./dotnet-install.sh
 	./dotnet-install.sh --channel 8.0
 	rm ./dotnet-install.sh
+
+uninst:
+	@echo " RM /usr/bin/malino"
+	@sudo rm /usr/bin/malino
+	@echo " RM /opt/malino"
+	@sudo rm -r /opt/malino
 
 toolkit:
 	@echo " GO malino"
@@ -59,7 +66,7 @@ deb:
 	@mkdir -p malino-deb/opt/malino
 
 	@echo "  W malino-deb/DEBIAN/control"
-	@sudo printf 'Package: malino\nVersion: $(shell date +%y%m%d)\nArchitecture: all\nDepends: golang-go, qemu-system-x86, qemu-utils, 7zip | p7zip\nMaintainer: Winksplorer <winksplorer@gordae.com>\nDescription: The Malino Linux-based OS development tookit\n' | sudo tee malino-deb/DEBIAN/control > /dev/null
+	@sudo printf 'Package: malino\nVersion: $(shell date +%y%m%d)\nArchitecture: all\nDepends: libc++1, xorriso, mtools, golang-go, qemu-system-x86, qemu-system-gui, 7zip\nMaintainer: Winksplorer <winksplorer@gordae.com>\nDescription: The Malino Linux-based OS development tookit\n' | sudo tee malino-deb/DEBIAN/control > /dev/null
 	
 	@echo " MV malino malino-deb/usr/bin/malino"
 	@mv $(parentFolder)/malino malino-deb/usr/bin/malino
@@ -70,7 +77,7 @@ deb:
 	@echo " MV libmalino-cs/libmalino-cs.dll malino-deb/opt/malino/libmalino-cs.dll"
 	@sudo mv libmalino-cs/libmalino-cs.dll malino-deb/opt/malino/libmalino-cs.dll
 
-	@echo " CH malino-deb TO root:root"
+	@echo " CH malino-deb TO root"
 	@sudo chown -R root:root malino-deb
 	@echo " CH malino-deb TO 0755"
 	@sudo chmod -R 0755 malino-deb/DEBIAN
