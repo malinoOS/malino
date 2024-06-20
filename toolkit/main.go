@@ -34,10 +34,6 @@ func main() {
 			if err := runProj(); err != nil {
 				fmt.Printf("Error while running project: %v\n", err.Error())
 			}
-		case "export":
-			if err := exportProj(); err != nil {
-				fmt.Printf("Error while exporting project: %v\n", err.Error())
-			}
 		case "download-kernel":
 			if err := getKernel(); err != nil {
 				fmt.Printf("Error while downloading kernel: %v\n", err.Error())
@@ -57,12 +53,11 @@ func main() {
 func printHelp() {
 	fmt.Print(
 		"malino toolkit v" + Version + "\n\n" +
-			"malino help        	 Shows this help menu\n" +
-			"malino new [name]  	 New project, creates folder and go module with name [name]\n" +
-			"malino new         	 New project, does not make folder, and uses the name of the folder it's executed in\n" +
-			"malino build       	 Builds a cpio of your OS\n" +
-			"malino run            	 Runs your OS cpio with a precompiled linux\n" +
-			"malino export           Exports your OS into an ISO file which can be shared or ran on real hardware machines\n" +
+			"malino help             Shows this help menu\n" +
+			"malino new -cs          New malino C# project, uses the name of the folder it's executed in\n" +
+			"malino new -go          New malino Go project, uses the name of the folder it's executed in\n" +
+			"malino build            Builds your project and creates a .ISO file which can be shared or ran\n" +
+			"malino run              Runs your OS in QEMU\n" +
 			"malino download-kernel  Downloads the latest Ubuntu Linux kernel.\n")
 }
 

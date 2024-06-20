@@ -13,11 +13,13 @@ func buildProj() error {
 	// Initialize the spinner (loading thing).
 	spinner := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 
+	name := "undefined"
 	curDir := "undefined"
 	if dir, err := os.Getwd(); err != nil {
 		return err
 	} else {
 		curDir = dir
+		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
 	}
 
 	if _, err := os.Stat("malino.cfg"); os.IsNotExist(err) {
@@ -62,7 +64,7 @@ func buildProj() error {
 			return err
 		}
 	case "c#":
-		if err := buildCSProj(spinner, conf); err != nil {
+		if err := buildCSProj(spinner, conf, name, curDir); err != nil {
 			return err
 		}
 	default:
@@ -96,7 +98,7 @@ func buildProj() error {
 
 	goToParentDir()
 	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
-		fmt.Println(" DL vmlinuz")
+		fmt.Println("GET vmlinuz")
 		spinner.Start()
 		if err := getKernel(); err != nil {
 			os.RemoveAll("initrd")
@@ -108,6 +110,9 @@ func buildProj() error {
 	if err := os.RemoveAll("initrd"); err != nil {
 		return err
 	}
+
+	// "malino export"
+	exportProj(name)
 
 	spinner.Stop()
 

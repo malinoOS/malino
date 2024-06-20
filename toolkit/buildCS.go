@@ -5,23 +5,13 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"strings"
 
 	"github.com/briandowns/spinner"
 )
 
-func buildCSProj(spinner *spinner.Spinner, conf []configLine) error {
+func buildCSProj(spinner *spinner.Spinner, conf []configLine, name string, curDir string) error {
 	fmt.Println(" C# init")
 	spinner.Start()
-	name := "undefined"
-	curDir := "undefined"
-	if dir, err := os.Getwd(); err != nil {
-
-		return err
-	} else {
-		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
-		curDir = dir
-	}
 
 	currentUser, err := user.Current()
 	if err != nil {

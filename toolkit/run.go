@@ -15,7 +15,7 @@ func runProj() error {
 	}
 
 	if _, err := os.Stat(name + ".iso"); os.IsNotExist(err) {
-		if err := exportProj(); err != nil {
+		if err := buildProj(); err != nil {
 			return err
 		}
 	}

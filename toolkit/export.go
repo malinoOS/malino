@@ -3,55 +3,21 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
-	"time"
-
-	"github.com/briandowns/spinner"
 )
 
-func exportProj() error {
-	// Initialize the spinner (loading thing).
-	spinner := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
-
-	name := "undefined"
-	if dir, err := os.Getwd(); err != nil {
-		return err
-	} else {
-		name = strings.Split(dir, "/")[len(strings.Split(dir, "/"))-1] // "name = split by / [len(split by /) - 1]" basically.
-	}
-
-	if _, err := os.Stat("malino.cfg"); os.IsNotExist(err) {
-		return fmt.Errorf("current directory does not contain a valid malino project")
-	}
-
-	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
-		if err := buildProj(); err != nil {
-			return err
-		}
-	}
-
-	if _, err := os.Stat("initramfs.cpio.gz"); os.IsNotExist(err) {
-		if err := buildProj(); err != nil {
-			return err
-		}
-	}
-
-	spinner.Start()
+func exportProj(name string) error {
 	fmt.Println("MK iso")
 	if err := createAndCD("iso"); err != nil {
-		spinner.Stop()
 		return err
 	}
 	fmt.Println("MK iso/boot")
 	if err := createAndCD("boot"); err != nil {
 		os.RemoveAll("iso")
-		spinner.Stop()
 		return err
 	}
 	fmt.Println("MK iso/boot/grub")
 	if err := createAndCD("grub"); err != nil {
 		os.RemoveAll("iso")
-		spinner.Stop()
 		return err
 	}
 	goToParentDir()
@@ -62,25 +28,21 @@ func exportProj() error {
 	fmt.Println("CP vmlinuz TO vmlinuz.bak")
 	if err := copyFile("vmlinuz", "vmlinuz.bak"); err != nil {
 		os.RemoveAll("iso")
-		spinner.Stop()
 		return err
 	}
 	fmt.Println("MV vmlinuz TO iso/boot/vmlinuz")
 	if err := os.Rename("vmlinuz", "iso/boot/vmlinuz"); err != nil {
 		os.RemoveAll("iso")
-		spinner.Stop()
 		return err
 	}
 	fmt.Println("MV vmlinuz.bak TO vmlinuz")
 	if err := os.Rename("vmlinuz.bak", "vmlinuz"); err != nil {
 		os.RemoveAll("iso")
-		spinner.Stop()
 		return err
 	}
 	fmt.Println("MV initramfs.cpio.gz TO iso/boot/initramfs.cpio.gz")
 	if err := os.Rename("initramfs.cpio.gz", "iso/boot/initramfs.cpio.gz"); err != nil {
 		os.RemoveAll("iso")
-		spinner.Stop()
 		return err
 	}
 
@@ -109,7 +71,6 @@ func exportProj() error {
 			"}\n"), 0777)
 	if err != nil {
 		os.RemoveAll("iso")
-		spinner.Stop()
 		return err
 	}
 
@@ -120,17 +81,14 @@ func exportProj() error {
 			fmt.Println("RUN /bin/grub-mkrescue")
 			if err := execCmd(true, "/bin/grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
 				os.RemoveAll("iso")
-				spinner.Stop()
 				return err
 			}
 		}
 	}
 
 	if err := os.RemoveAll("iso"); err != nil {
-		spinner.Stop()
 		return err
 	}
-	spinner.Stop()
 
 	return nil
 }
