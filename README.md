@@ -30,6 +30,7 @@
 #### [GitHub Wiki: Installation](https://github.com/malinoOS/malino/wiki/Installation)
 
 ### How to use
+#### [GitHub Wiki: Getting Started](https://github.com/malinoOS/malino/wiki/Getting-Started)
 #### [GitHub Wiki: Toolkit usage](https://github.com/malinoOS/malino/wiki/Toolkit-usage)
 
 # Directory structure
