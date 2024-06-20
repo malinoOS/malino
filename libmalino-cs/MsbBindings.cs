@@ -104,24 +104,3 @@ public class MsbBindings
     [DllImport("libmsb", EntryPoint = "msb_dsc")]
     public static extern int Syscall(long rax, long rdi, long rsi, long rdx, long r10, long r8, long r9);
 }
-
-#pragma warning disable CS1591
-public struct Termios {
-    public UInt32 Iflag;
-    public UInt32 Oflag;
-    public UInt32 Cflag;
-    public UInt32 Lflag;
-    public byte Line;
-    public byte[] Cc; 
-    public byte[] Pad_cgo_0;
-    public UInt32 Ispeed;
-    public UInt32 Ospeed;
-
-    public static Termios Create() {
-        return new Termios {
-            Cc = new byte[32],
-            Pad_cgo_0 = new byte[3]
-        };
-    }
-}
-#pragma warning restore CS1591
