@@ -22,8 +22,9 @@ dotnet:
 	chmod +x ./dotnet-install.sh
 	./dotnet-install.sh --channel 8.0
 	rm ./dotnet-install.sh
-	echo -e "\nexport PATH=\"$^PATH:/home/$(shell whoami)/.dotnet\"" >> .bashrc
-	echo -e "\nexport PATH=\"$^PATH:/home/$(shell whoami)/.dotnet\"" >> .zshrc
+	echo -e "\nexport PATH=\"$$PATH:/home/$(shell whoami)/.dotnet\"" >> /home/$(shell whoami)/.bashrc
+	echo -e "\nexport PATH=\"$$PATH:/home/$(shell whoami)/.dotnet\"" >> /home/$(shell whoami)/.zshrc
+	@echo -e "\n\n\n.NET is installed! Restart your terminal or shell then run make dev.\n"
 
 uninst:
 	@echo " RM /usr/bin/malino"

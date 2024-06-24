@@ -107,15 +107,18 @@ func DownloadCSCompiler(homeDirectory string) error {
 func getCsFiles(dir string) ([]string, error) {
 	var csFiles []string
 
-	files, err := os.ReadDir(dir)
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && filepath.Ext(info.Name()) == ".cs" {
+			csFiles = append(csFiles, path)
+		}
+		return nil
+	})
+
 	if err != nil {
 		return nil, err
-	}
-
-	for _, file := range files {
-		if !file.IsDir() && filepath.Ext(file.Name()) == ".cs" {
-			csFiles = append(csFiles, file.Name())
-		}
 	}
 
 	return csFiles, nil
