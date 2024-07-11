@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace libmalino;
@@ -6,10 +7,11 @@ namespace libmalino;
 /// <summary>
 /// Core functions.
 /// </summary>
+#pragma warning disable IDE1006
 #pragma warning disable CS8981
-public class malino { // stfu c#, that's the naming style of malino
+public class malino {
 #pragma warning restore CS8981
-    /// <summary>
+#pragma warning restore IDE1006
     /// Syncs filesystems then shuts down the computer. If it fails then it will throw an exception of the Errno message.
     /// </summary>
     public static void ShutdownComputer() {
@@ -58,7 +60,15 @@ public class malino { // stfu c#, that's the naming style of malino
     /// </summary>
     public static int SpawnProcess(string path, string startDir, string[] environmentVariables, bool wait, string[] args) {
         Directory.SetCurrentDirectory(startDir);
-        int val = MsbBindings.ForkExec(path, args, environmentVariables, wait);
+        List<string> argTemp = [path];
+        argTemp.AddRange(args);
+        
+        #pragma warning disable CS8625
+        argTemp.Add(null);
+        List<string> envp = [.. environmentVariables, null];
+        #pragma warning restore CS8625
+
+        int val = MsbBindings.ForkExec(path, [.. argTemp], [.. envp], wait);
         if (val < 0)
             throw new Exception(Errno.GetStringErr(-val));
         else

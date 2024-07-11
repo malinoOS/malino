@@ -13,6 +13,11 @@ func buildGoProj(spinner *spinner.Spinner, conf []configLine) error {
 		spinner.Stop()
 		return err
 	}
+	// make sure we are on the latest version of libmalino
+	if err := execCmd(true, "/usr/bin/go", "get", "-u", "github.com/malinoOS/malino/libmalino"); err != nil {
+		spinner.Stop()
+		return err
+	}
 
 	fmt.Println(" GO init")
 	buildFlagsExist := false
