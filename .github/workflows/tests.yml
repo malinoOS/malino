@@ -1,0 +1,38 @@
+name: Run tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Requirements
+      run: sudo apt install libc++1 xorriso mtools git make golang-go 7zip clang grub-pc-bin
+
+    - name: install .NET
+      run: |
+        make dotnet
+        sudo ln -sf ~/.dotnet/dotnet /usr/bin/dotnet
+
+    - name: Build
+      run: make dev
+
+    - name: Create folder
+      run: mkdir testOS
+
+    - name: New project
+      working-directory: ./testOS
+      run: malino new -cs
+        
+
+    - name: Build project
+      working-directory: ./testOS
+      run: malino build
