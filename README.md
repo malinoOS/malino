@@ -1,10 +1,10 @@
 <p align="center"><img src="https://github.com/malinoOS/malino/assets/49623720/c764dd50-c0cd-4440-993a-49373ebba912" width="400"></p>
 
 <p align="center">
-<a href="https://discord.gg/2yfxxfNT6F"><img src="https://img.shields.io/badge/chat-on_discord-blue?style=for-the-badge&logo=discord"></a>
-<img src="https://img.shields.io/github/languages/code-size/malinoOS/malino?style=for-the-badge&logo=files"/>
-<a href="https://github.com/malinoOS/malino/releases/latest"><img src="https://img.shields.io/github/v/release/malinoOS/malino?style=for-the-badge&logo=debian" /></a>
-<a href="https://github.com/malinoOS/malino/blob/master/LICENSE"><img src="https://img.shields.io/github/license/malinoOS/malino?style=for-the-badge&logo=mozilla"/></a>
+<a href="https://discord.gg/2yfxxfNT6F"><img src="https://img.shields.io/badge/chat-on_discord-blue?style=for-the-badge&logo=discord&logoColor=white"></a>
+<img src="https://img.shields.io/github/languages/code-size/malinoOS/malino?style=for-the-badge&logo=files&logoColor=white"/>
+<a href="https://github.com/malinoOS/malino/releases/latest"><img src="https://img.shields.io/github/v/release/malinoOS/malino?style=for-the-badge&logo=debian&logoColor=white" /></a>
+<a href="https://github.com/malinoOS/malino/blob/master/LICENSE"><img src="https://img.shields.io/github/license/malinoOS/malino?style=for-the-badge&logo=mozilla&logoColor=white"/></a>
 </p>
 
 ### malino is a toolkit that allows people to create their own operating systems, easily.
