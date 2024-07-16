@@ -3,7 +3,7 @@
 
     This code is part of libmsb (the Malino Syscall Bridge).
 
-    Copyleft 2024 malino. This code is licensed under GPL2.
+    Copyleft 2024 malino. This code is licensed under MPL-2.0.
 */
 
 #include <unistd.h>
