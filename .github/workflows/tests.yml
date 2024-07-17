@@ -25,14 +25,23 @@ jobs:
     - name: Build
       run: make dev
 
-    - name: Create folder
-      run: mkdir testOS
+    - name: Create folders
+      run: |
+        mkdir testOS
+        mkdir testOScs
 
-    - name: New project
+    - name: New project (Go)
       working-directory: ./testOS
+      run: malino new -go
+
+    - name: Build project (Go)
+      working-directory: ./testOS
+      run: malino build
+    
+    - name: New project (C#)
+      working-directory: ./testOScs
       run: malino new -cs
-        
 
-    - name: Build project
-      working-directory: ./testOS
+    - name: Build project (C#)
+      working-directory: ./testOScs
       run: malino build

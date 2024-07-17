@@ -144,7 +144,7 @@ public class Errno {
             131 => "ENOTRECOVERABLE State not recoverable",
             132 => "ERFKILL Operation not possible due to RF-kill",
             133 => "EHWPOISON Memory page has hardware error",
-            _ => "ENOMSG No message of desired type",
+            _ => $"ENOMSG No message of desired type ({id})",
         };
     }
 }
