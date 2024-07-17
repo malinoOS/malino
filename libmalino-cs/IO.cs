@@ -7,7 +7,7 @@ namespace libmalino;
 /// </summary>
 public class malinoIO {
     /// <summary>
-    /// Clears the screen.
+    /// Clears the screen. Because Console.Clear() doesn't work for some reason.
     /// </summary>
     public static void ClearScreen() {
         Console.Write("\x1b[2J\x1b[H");
@@ -21,14 +21,14 @@ public class malinoIO {
         string input = "";
         while (true)
         {
-            ConsoleKeyInfo key = Console.ReadKey(true);
+            ConsoleKeyInfo key = Console.ReadKey(true); // read a byte
 
-            if (key.Key == ConsoleKey.Enter)
+            if (key.Key == ConsoleKey.Enter) // newline
             {
                 Console.WriteLine();
                 break;
             }
-            else if (key.Key == ConsoleKey.Backspace)
+            else if (key.Key == ConsoleKey.Backspace) // backspace
             {
                 if (input.Length > 0)
                 {
@@ -36,7 +36,7 @@ public class malinoIO {
                     Console.Write("\b \b"); // Clears the character visually on the screen
                 }
             }
-            else
+            else // anything else
             {
                 input += key.KeyChar;
                 Console.Write(key.KeyChar);

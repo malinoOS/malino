@@ -21,6 +21,7 @@ func UserLine() string {
 	var buf [1]byte
 	var cmdString strings.Builder
 	for {
+		// read a byte
 		n, err := syscall.Read(int(os.Stdin.Fd()), buf[:])
 		if err != nil {
 			fmt.Printf("Critical error while reading characters:\n%v", err)
@@ -28,10 +29,10 @@ func UserLine() string {
 		}
 		if n > 0 {
 			char := buf[0]
-			if char == '\n' {
+			if char == '\n' { // newline
 				fmt.Println()
 				return cmdString.String()
-			} else if char == 127 { // ASCII code for backspace
+			} else if char == 127 { // backspace
 				if cmdString.Len() > 0 {
 					cmd := cmdString.String()
 					if len(cmd) > 1 {
@@ -43,7 +44,7 @@ func UserLine() string {
 						fmt.Print("\b \b")
 					}
 				}
-			} else {
+			} else { // anything else
 				fmt.Print(string(char))
 				cmdString.WriteByte(char)
 			}
@@ -60,6 +61,9 @@ func ClearScreen() {
 //
 // Returns: nil if successful, and if not then it returns the errno.
 func SetNonCanonicalMode() error {
+
+	// I don't think we actually need this?
+
 	fd := int(os.Stdin.Fd())
 	var termios syscall.Termios
 	_, _, errno := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall.TCGETS), uintptr(unsafe.Pointer(&termios)), 0, 0, 0)

@@ -59,20 +59,22 @@ public class malino {
     /// Returns: if wait=true, the return code, if wait=false, 0. This will throw an exception of the errno message if an error happened while spawning the process.
     /// </summary>
     public static int SpawnProcess(string path, string startDir, string[] environmentVariables, bool wait, string[] args) {
+        // CD into the directory
         Directory.SetCurrentDirectory(startDir);
+        // prefix args with path, suffix args with null
         List<string> argTemp = [path];
         argTemp.AddRange(args);
-        
         #pragma warning disable CS8625
         argTemp.Add(null);
+        // suffix env with null
         List<string> envp = [.. environmentVariables, null];
         #pragma warning restore CS8625
 
+        // fork & execute: spawn a NEW process
         int val = MsbBindings.ForkExec(path, [.. argTemp], [.. envp], wait);
         if (val < 0)
             throw new Exception(Errno.GetStringErr(-val));
-        else
-            return val;
+        return val;
     }
 
     /// <summary>
