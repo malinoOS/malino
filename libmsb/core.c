@@ -16,6 +16,9 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <sys/reboot.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
 
 void msb_sync() {
     // sync.
@@ -92,7 +95,7 @@ int msb_forkexec(const char *_Nonnull path, char *const _Nullable argv[], char *
 
             // "i don't know what happened here"
             else
-                return -42; // -ENOMSG
+                return -ENOMSG;
         }
         // since we can't get the return code, just return 0 since the process spawned successfully
         return 0;
@@ -102,4 +105,49 @@ int msb_forkexec(const char *_Nonnull path, char *const _Nullable argv[], char *
 long msb_dsc(long rax, long rdi, long rsi, long rdx, long r10, long r8, long r9) {
     // syscall.
     return syscall(rax,rdi,rsi,rdx,r10,r8,r9);
+}
+
+int msb_loadko(const char *_Nonnull path, const char *_Nonnull param) {
+    // loads a linux kernel module. KO file format.
+
+    // open the module file
+    int fd = open(path, O_RDONLY);
+    if (fd == -1)
+        return errno;
+
+    // get size
+    struct stat fileInfo;
+    if (fstat(fd, &fileInfo) == -1) {
+        close(fd);
+        return errno;
+    }
+    size_t imageSize = fileInfo.st_size;
+
+    // alloc memory for the module
+    char *image = (char*)malloc(imageSize);
+    if (image == NULL) {
+        close(fd);
+        return ENOMEM;
+    }
+
+    // read module file
+    if (read(fd, image, imageSize) != imageSize) {
+        free(image);
+        close(fd);
+        return errno;
+    }
+
+    // we're done with the file
+    close(fd);
+
+    // actually load
+    int ret = syscall(SYS_init_module, image, imageSize, param);
+    if (ret == -1) {
+        free(image);
+        return errno;
+    }
+
+    // we're now actually done
+    free(image);
+    return 0;
 }

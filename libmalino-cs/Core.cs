@@ -126,4 +126,13 @@ public class malino {
         if (val != 0)
             throw new Exception(Errno.GetStringErr(val));
     }
+
+    /// <summary>
+    /// Loads a Linux kernel module (.ko format).
+    /// </summary>
+    public static void LoadKernelModule(string path) {
+        int val = MsbBindings.LoadKernelModule(path,"");
+        if (val != 0)
+            throw new Exception(Errno.GetStringErr(val));
+    }
 }

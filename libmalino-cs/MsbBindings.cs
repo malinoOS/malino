@@ -5,6 +5,11 @@ using System.Text;
 
 namespace libmalino;
 
+// please shut up
+#pragma warning disable CA1401
+#pragma warning disable CA2101
+#pragma warning disable SYSLIB1054
+
 /// <summary>
 /// These are bindings for libmsb, a core library that malino needs for the C# variant of libmalino.
 ///
@@ -103,4 +108,15 @@ public class MsbBindings
     /// </summary>
     [DllImport("libmsb", EntryPoint = "msb_dsc")]
     public static extern int Syscall(long rax, long rdi, long rsi, long rdx, long r10, long r8, long r9);
+
+    /// <summary>
+    /// Loads a Linux kernel module (.ko format). USE LIBMALINO.MALINO.LOADKERNELMODULE() INSTEAD!!!!
+    /// </summary>
+    [DllImport("libmsb", EntryPoint = "msb_loadko")]
+    public static extern int LoadKernelModule(string path, string param);
 }
+
+// please unshut up
+#pragma warning restore CA1401
+#pragma warning restore CA2101
+#pragma warning restore SYSLIB1054

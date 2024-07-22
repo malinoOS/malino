@@ -22,5 +22,6 @@ int msb_umount2(const char *_Nonnull target, int flags);
 pid_t msb_getpid();
 int msb_forkexec(const char *_Nonnull path, char *const _Nullable argv[_Nullable], char *const _Nullable envp[_Nullable], bool wait);
 long msb_dsc(long rax, long rdi, long rsi, long rdx, long r10, long r8, long r9);
+int msb_loadko(const char *_Nonnull path, const char *_Nonnull param);
 
 #endif
