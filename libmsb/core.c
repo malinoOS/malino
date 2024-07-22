@@ -8,7 +8,6 @@
 
 #include <unistd.h>
 #include <string.h>
-#include <linux/reboot.h>
 #include <sys/syscall.h>
 #include "core.h"
 #include <stdint.h>
@@ -16,6 +15,7 @@
 #include <sys/mount.h>
 #include <stdbool.h>
 #include <errno.h>
+#include <sys/reboot.h>
 
 void msb_sync() {
     // sync.
@@ -71,8 +71,9 @@ int msb_forkexec(const char *_Nonnull path, char *const _Nullable argv[], char *
         return -errno;
     } else if (pid == 0) {
         // Child process
-        if (execve(path, argv, envp) == -1);
+        if (execve(path, argv, envp) == -1)
             return -errno;
+        return 0;
     } else {
         // Parent Process
         if (wait) {
