@@ -7,14 +7,41 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 )
 
 var args []string
 var Version string = "undefined"
+var currentUser *user.User
 
 func main() {
+	currentUserTemp, err := user.Current()
+	if err != nil {
+		fmt.Printf("malino: could not get current username: %v\n", err.Error())
+		os.Exit(1)
+	}
+	currentUser = currentUserTemp
+
+	if stat, err := os.Stat("/home/" + currentUser.Username + "/.malino"); err != nil {
+		if os.IsNotExist(err) {
+			err := os.Mkdir("/home/"+currentUser.Username+"/.malino", 0777)
+			if err != nil {
+				fmt.Printf("malino: could not create ~/.malino: %v\n", err.Error())
+				os.Exit(1)
+			}
+		} else {
+			fmt.Printf("malino: could not check existence of ~/.malino: %v\n", err.Error())
+			os.Exit(1)
+		}
+	} else {
+		if !stat.IsDir() {
+			fmt.Println("malino: ~/.malino exists, but is a file. Please delete or rename ~/.malino.")
+			os.Exit(1)
+		}
+	}
+
 	args = os.Args[1:]
 
 	if len(args) > 0 { // check if there is any args after "malino"
@@ -24,19 +51,19 @@ func main() {
 			os.Exit(0)
 		case "new":
 			if err := newProj(args); err != nil {
-				fmt.Printf("Error while creating project: %v\n", err.Error())
+				fmt.Printf("malino: error while creating project: %v\n", err.Error())
 			}
 		case "build":
 			if err := buildProj(); err != nil {
-				fmt.Printf("Error while building project: %v\n", err.Error())
+				fmt.Printf("malino: error while building project: %v\n", err.Error())
 			}
 		case "run":
 			if err := runProj(); err != nil {
-				fmt.Printf("Error while running project: %v\n", err.Error())
+				fmt.Printf("malino: error while running project: %v\n", err.Error())
 			}
-		case "download-kernel":
+		case "update-kernel":
 			if err := getKernel(); err != nil {
-				fmt.Printf("Error while downloading kernel: %v\n", err.Error())
+				fmt.Printf("malino: error while updating kernel: %v\n", err.Error())
 			}
 		default:
 			fmt.Println("malino: Invalid operation")
@@ -58,7 +85,7 @@ func printHelp() {
 			"malino new -go          New malino Go project, uses the name of the folder it's executed in\n" +
 			"malino build            Builds your project and creates a .ISO file which can be shared or ran\n" +
 			"malino run              Runs your OS in QEMU\n" +
-			"malino download-kernel  Downloads the latest Ubuntu Linux kernel.\n")
+			"malino update-kernel    Downloads the latest Linux kernel. Recommended to do this about every 2 weeks.\n")
 }
 
 func createAndCD(dir string) error {

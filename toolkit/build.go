@@ -97,8 +97,8 @@ func buildProj() error {
 	}
 
 	goToParentDir()
-	if _, err := os.Stat("vmlinuz"); os.IsNotExist(err) {
-		fmt.Println("GET vmlinuz")
+	if _, err := os.Stat("/home/" + currentUser.Username + "/.malino/vmlinuz"); os.IsNotExist(err) {
+		fmt.Println("GET ~/.malino/vmlinuz")
 		spinner.Start()
 		if err := getKernel(); err != nil {
 			os.RemoveAll("initrd")
@@ -115,6 +115,10 @@ func buildProj() error {
 	exportProj(name)
 
 	spinner.Stop()
+
+	if _, err := os.Stat("vmlinuz"); err == nil {
+		fmt.Println("btw, you can delete the vmlinuz file in this project, malino now stores it's kernel in ~/.malino/vmlinuz.")
+	}
 
 	return nil
 }

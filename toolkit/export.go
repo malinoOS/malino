@@ -6,16 +6,14 @@ import (
 )
 
 func exportProj(name string) error {
-	fmt.Println("MK iso")
+	fmt.Println(" MK iso/boot/grub")
 	if err := createAndCD("iso"); err != nil {
 		return err
 	}
-	fmt.Println("MK iso/boot")
 	if err := createAndCD("boot"); err != nil {
 		os.RemoveAll("iso")
 		return err
 	}
-	fmt.Println("MK iso/boot/grub")
 	if err := createAndCD("grub"); err != nil {
 		os.RemoveAll("iso")
 		return err
@@ -24,23 +22,13 @@ func exportProj(name string) error {
 	goToParentDir()
 	goToParentDir()
 
-	// we really don't want to download vmlinuz like 300 times in one day, kernel.ubuntu.com will probably hate me if i do that
-	fmt.Println("CP vmlinuz TO vmlinuz.bak")
-	if err := copyFile("vmlinuz", "vmlinuz.bak"); err != nil {
+	fmt.Println(" CP ~/.malino/vmlinuz TO iso/boot/vmlinuz")
+	if err := copyFile("/home/"+currentUser.Username+"/.malino/vmlinuz", "iso/boot/vmlinuz"); err != nil {
 		os.RemoveAll("iso")
 		return err
 	}
-	fmt.Println("MV vmlinuz TO iso/boot/vmlinuz")
-	if err := os.Rename("vmlinuz", "iso/boot/vmlinuz"); err != nil {
-		os.RemoveAll("iso")
-		return err
-	}
-	fmt.Println("MV vmlinuz.bak TO vmlinuz")
-	if err := os.Rename("vmlinuz.bak", "vmlinuz"); err != nil {
-		os.RemoveAll("iso")
-		return err
-	}
-	fmt.Println("MV initramfs.cpio.gz TO iso/boot/initramfs.cpio.gz")
+
+	fmt.Println(" MV initramfs.cpio.gz TO iso/boot/initramfs.cpio.gz")
 	if err := os.Rename("initramfs.cpio.gz", "iso/boot/initramfs.cpio.gz"); err != nil {
 		os.RemoveAll("iso")
 		return err

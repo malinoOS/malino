@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/user"
 	"path/filepath"
 
 	"github.com/briandowns/spinner"
@@ -12,12 +11,6 @@ import (
 func buildCSProj(spinner *spinner.Spinner, conf []configLine, name string, curDir string) error {
 	fmt.Println(" C# init")
 	spinner.Start()
-
-	currentUser, err := user.Current()
-	if err != nil {
-		spinner.Stop()
-		return err
-	}
 
 	if _, err := os.Stat("/home/" + currentUser.Username + "/.bflat/bflat"); os.IsNotExist(err) {
 		if err := DownloadCSCompiler("/home/" + currentUser.Username); err != nil {

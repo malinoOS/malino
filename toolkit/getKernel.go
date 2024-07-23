@@ -112,7 +112,7 @@ func getKernel() error {
 
 func moveBootContentToVmlinuz() error {
 	srcPath := "./boot/"
-	destPath := "./vmlinuz"
+	destPath := "/home/" + currentUser.Username + "/.malino/vmlinuz"
 
 	srcFiles, err := os.ReadDir(srcPath)
 	if err != nil {

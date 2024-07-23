@@ -82,7 +82,7 @@ func newProj(args []string) error {
 			return err
 		}
 
-		err = os.WriteFile(".gitignore", []byte("vmlinuz\ninitramfs.cpio.gz\n"+name+".iso"), 0777)
+		err = os.WriteFile(".gitignore", []byte("initramfs.cpio.gz\n"+name+".iso"), 0777)
 		if err != nil {
 			spinner.Stop()
 			return err
@@ -166,7 +166,7 @@ func newProj(args []string) error {
 			return err
 		}
 
-		err = os.WriteFile(".gitignore", []byte("vmlinuz\ninitramfs.cpio.gz\n"+name+".iso\nbin\nobj\nmalino.generated.cs"), 0777)
+		err = os.WriteFile(".gitignore", []byte("initramfs.cpio.gz\n"+name+".iso\nbin\nobj\nmalino.generated.cs"), 0777)
 		if err != nil {
 			spinner.Stop()
 			return err
