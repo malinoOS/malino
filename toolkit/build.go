@@ -98,9 +98,9 @@ func buildProj() error {
 
 	goToParentDir()
 	if _, err := os.Stat("/home/" + currentUser.Username + "/.malino/vmlinuz"); os.IsNotExist(err) {
-		fmt.Println("GET ~/.malino/vmlinuz")
+		fmt.Println("Downloading Linux kernel & modules. This will take a long time (2-5 minutes), but you'll only have to do it once. (or when you run `malino update-kernel`)")
 		spinner.Start()
-		if err := getKernel(); err != nil {
+		if err := getKernel(true); err != nil {
 			os.RemoveAll("initrd")
 			return err
 		}

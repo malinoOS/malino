@@ -53,16 +53,29 @@ func main() {
 			if err := newProj(args); err != nil {
 				fmt.Printf("malino: error while creating project: %v\n", err.Error())
 			}
+			os.Exit(0)
 		case "build":
 			if err := buildProj(); err != nil {
 				fmt.Printf("malino: error while building project: %v\n", err.Error())
 			}
+			os.Exit(0)
 		case "run":
 			if err := runProj(); err != nil {
 				fmt.Printf("malino: error while running project: %v\n", err.Error())
 			}
+			os.Exit(0)
 		case "update-kernel":
-			if err := getKernel(); err != nil {
+			if len(args) > 1 { // check if there is any args after "update-kernel"
+				// -no-modules is only here so testing github workflow doesn't take forever.
+				// it's also nice not to take bandwith from ubuntu's kernel servers.
+				if args[1] == "-no-modules" {
+					if err := getKernel(false); err != nil {
+						fmt.Printf("malino: error while updating kernel: %v\n", err.Error())
+					}
+					os.Exit(0)
+				}
+			}
+			if err := getKernel(true); err != nil {
 				fmt.Printf("malino: error while updating kernel: %v\n", err.Error())
 			}
 		default:

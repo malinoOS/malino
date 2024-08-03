@@ -10,7 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func getKernel() error {
+func getKernel(downloadModules bool) error {
 	mainURL := "https://kernel.ubuntu.com/mainline/"
 
 	// Fetch the main page
@@ -61,6 +61,11 @@ func getKernel() error {
 		// Check if the page contains the text "Test amd64 missing"
 		pageHTML, _ := doc.Html()
 		if !strings.Contains(pageHTML, "Test amd64 missing") {
+			fmt.Println("Downloading kernel...")
+			if err := os.Remove(fmt.Sprintf("/home/%s/.malino/vmlinuz", currentUser.Username)); err != nil {
+				return err
+			}
+
 			// If the page does not contain the text, process the link and stop the loop
 			fourthLink, _ := doc.Find("a").Eq(3).Attr("href") // get the fourth link
 			fourthLinkURL := linkURL + fourthLink
@@ -102,7 +107,80 @@ func getKernel() error {
 				return err
 			}
 
-			fmt.Println("Done.")
+			if downloadModules {
+				fmt.Printf("Linux kernel image \"%s\" downloaded, now downloading kernel modules... (this will take a while)\n", doc.Find("a").Eq(3).Text())
+
+				if err := os.RemoveAll(fmt.Sprintf("/home/%s/.malino/modules", currentUser.Username)); err != nil {
+					return err
+				}
+
+				fifthLink, _ := doc.Find("a").Eq(4).Attr("href") // get the fourth link
+				fifthLinkURL := linkURL + fifthLink
+
+				if err := downloadFile(fifthLinkURL, "mods.deb"); err != nil {
+					return err
+				}
+
+				if err := extractWith7z("mods.deb"); err != nil {
+					return err
+				}
+
+				if err := extractWith7z("data.tar"); err != nil {
+					// some symlink bs makes 7zip always return 2.
+					if !strings.Contains(err.Error(), "2") {
+						return err
+					}
+				}
+
+				// we have a perfectly good move binary, why not use it :sob:
+				if err := execCmd(true, "/bin/bash", "-c", "mv lib/modules/*/kernel /home/$(whoami)/.malino/modules"); err != nil {
+					return err
+				}
+
+				// go error handling moment
+				if err := os.RemoveAll("boot"); err != nil {
+					return err
+				}
+
+				if err := os.RemoveAll("usr"); err != nil {
+					return err
+				}
+
+				if err := os.RemoveAll("lib"); err != nil {
+					return err
+				}
+
+				if err := os.Remove("control.tar"); err != nil {
+					return err
+				}
+
+				if err := os.Remove("data.tar"); err != nil {
+					return err
+				}
+
+				if err := os.Remove("mods.deb"); err != nil {
+					return err
+				}
+
+				// unextract 'em all
+				fmt.Printf("Linux kernel module pack \"%s\" downloaded, Now unextracting modules... (this will take a very long time)\n", doc.Find("a").Eq(4).Text())
+
+				zstFiles, err := findZstFiles(fmt.Sprintf("/home/%s/.malino/modules", currentUser.Username))
+				if err != nil {
+					return fmt.Errorf("error finding compressed files: %s", err.Error())
+				}
+
+				err = decompressZstFiles(zstFiles)
+				if err != nil {
+					return fmt.Errorf("error decompressing compressed files: %s", err.Error())
+				}
+
+				err = removeZstFiles(zstFiles)
+				if err != nil {
+					return fmt.Errorf("error removing compressed files: %s", err.Error())
+				}
+			}
+
 			return nil
 		}
 	}
@@ -132,5 +210,40 @@ func moveBootContentToVmlinuz() error {
 		}
 	}
 
+	return nil
+}
+
+func findZstFiles(root string) ([]string, error) {
+	var zstFiles []string
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && strings.HasSuffix(info.Name(), ".zst") {
+			zstFiles = append(zstFiles, path)
+		}
+		return nil
+	})
+	return zstFiles, err
+}
+
+func decompressZstFiles(zstFiles []string) error {
+	for _, zstFile := range zstFiles {
+		err := execCmd(true, "unzstd", zstFile)
+		if err != nil {
+			return fmt.Errorf("error decompressing file %s: %w", zstFile, err)
+		}
+		fmt.Print("\033[1A")
+	}
+	return nil
+}
+
+func removeZstFiles(zstFiles []string) error {
+	for _, zstFile := range zstFiles {
+		err := os.Remove(zstFile)
+		if err != nil {
+			return fmt.Errorf("error removing file %s: %w", zstFile, err)
+		}
+	}
 	return nil
 }

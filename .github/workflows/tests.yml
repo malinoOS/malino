@@ -25,6 +25,9 @@ jobs:
     - name: Build
       run: make dev
 
+    - name: Download kernel
+      run: malino update-kernel -no-modules
+
     - name: Create folders
       run: |
         mkdir testOS

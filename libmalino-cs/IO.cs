@@ -5,7 +5,9 @@ namespace libmalino;
 /// <summary>
 /// Functions for some general stuff relating to input/output from/to the the user.
 /// </summary>
+#pragma warning disable IDE1006
 public class malinoIO {
+#pragma warning restore IDE1006
     /// <summary>
     /// Clears the screen. Because Console.Clear() doesn't work for some reason.
     /// </summary>
