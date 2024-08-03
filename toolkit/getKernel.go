@@ -66,6 +66,7 @@ func getKernel(downloadModules bool) error {
 				if !os.IsNotExist(err) {
 					return err
 				}
+			} else {
 				if err := os.Remove(fmt.Sprintf("/home/%s/.malino/vmlinuz", currentUser.Username)); err != nil {
 					return err
 				}
@@ -119,6 +120,7 @@ func getKernel(downloadModules bool) error {
 					if !os.IsNotExist(err) {
 						return err
 					}
+				} else {
 					if err := os.RemoveAll(fmt.Sprintf("/home/%s/.malino/modules", currentUser.Username)); err != nil {
 						return err
 					}
