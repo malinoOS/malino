@@ -62,8 +62,13 @@ func getKernel(downloadModules bool) error {
 		pageHTML, _ := doc.Html()
 		if !strings.Contains(pageHTML, "Test amd64 missing") {
 			fmt.Println("Downloading kernel...")
-			if err := os.Remove(fmt.Sprintf("/home/%s/.malino/vmlinuz", currentUser.Username)); err != nil {
-				return err
+			if _, err := os.Stat(fmt.Sprintf("/home/%s/.malino/vmlinuz", currentUser.Username)); err != nil {
+				if !os.IsNotExist(err) {
+					return err
+				}
+				if err := os.Remove(fmt.Sprintf("/home/%s/.malino/vmlinuz", currentUser.Username)); err != nil {
+					return err
+				}
 			}
 
 			// If the page does not contain the text, process the link and stop the loop
@@ -110,8 +115,13 @@ func getKernel(downloadModules bool) error {
 			if downloadModules {
 				fmt.Printf("Linux kernel image \"%s\" downloaded, now downloading kernel modules... (this will take a while)\n", doc.Find("a").Eq(3).Text())
 
-				if err := os.RemoveAll(fmt.Sprintf("/home/%s/.malino/modules", currentUser.Username)); err != nil {
-					return err
+				if _, err := os.Stat(fmt.Sprintf("/home/%s/.malino/modules", currentUser.Username)); err != nil {
+					if !os.IsNotExist(err) {
+						return err
+					}
+					if err := os.RemoveAll(fmt.Sprintf("/home/%s/.malino/modules", currentUser.Username)); err != nil {
+						return err
+					}
 				}
 
 				fifthLink, _ := doc.Find("a").Eq(4).Attr("href") // get the fourth link
