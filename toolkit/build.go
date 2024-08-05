@@ -9,6 +9,13 @@ import (
 	"github.com/briandowns/spinner"
 )
 
+var buildflags []string
+var lang string = ""
+var includes []configLine
+var includeLines []int
+var modpacks []configLine
+var modpackLines []int
+
 func buildProj() error {
 	// Initialize the spinner (loading thing).
 	spinner := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
@@ -32,20 +39,33 @@ func buildProj() error {
 		os.Remove("initramfs.cpio.gz")
 	}
 
-	var conf []configLine
+	// go through the config
 	if _, err := os.Stat(curDir + "/malino.cfg"); !os.IsNotExist(err) {
 		file, err := os.ReadFile(curDir + "/malino.cfg")
 		if err != nil {
 			return err
 		}
+		// for every line, parse it into an operation string, and argument parameter
 		lines := strings.Split(string(file), "\n")
 		for lineNum, line := range lines {
 			confLine := parseConfigLine(line, lineNum+1)
+
+			// if error while parsing, return error
 			if confLine.err != nil {
 				return confLine.err
 			}
-			if confLine.hasAnything {
-				conf = append(conf, confLine)
+
+			switch confLine.operation {
+			case "lang":
+				lang = confLine.args[0]
+			case "buildflags":
+				buildflags = confLine.args
+			case "include":
+				includes = append(includes, confLine)
+				includeLines = append(includeLines, lineNum)
+			case "modpack":
+				modpacks = append(modpacks, confLine)
+				modpackLines = append(modpackLines, lineNum)
 			}
 		}
 	}
@@ -54,26 +74,22 @@ func buildProj() error {
 		fmt.Printf("op: %v | args: %v\n", line.operation, strings.Join(line.args, " "))
 	}*/
 
-	lang, err := handleLangLine(conf[0])
-	if err != nil {
-		return err
-	}
 	switch lang {
 	case "go":
-		if err := buildGoProj(spinner, conf); err != nil {
+		spinner.Stop()
+		fmt.Println("LNG go")
+		if err := buildGoProj(spinner); err != nil {
 			return err
 		}
 	case "c#":
-		if err := buildCSProj(spinner, conf, name, curDir); err != nil {
+		spinner.Stop()
+		fmt.Println("LNG c#")
+		if err := buildCSProj(spinner, name, curDir); err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("malino.cfg: line 1: invalid language")
+		return fmt.Errorf("malino.cfg: line 1: invalid language %s", lang)
 	}
-
-	// TODO: compile other stuff
-	// nah just let the user make a makefile
-	// use maura as an example
 
 	fmt.Println(" MK initramfs.cpio.gz")
 	if err := createAndCD("initrd"); err != nil {
@@ -85,11 +101,15 @@ func buildProj() error {
 		spinner.Stop()
 		return err
 	}
-	for _, line := range conf {
-		if line.operation == "include" {
-			handleIncludeLine(line)
+
+	// now is the time to handle includes, modpacks, etc...
+	// handle includes
+	for i, include := range includes {
+		if err := handleIncludeLine(include); err != nil {
+			return fmt.Errorf("malino.cfg: line %d: %s", includeLines[i], err.Error())
 		}
 	}
+
 	if err := execCmd(false, "/usr/bin/bash", "-c", "find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.cpio.gz"); err != nil {
 		os.RemoveAll("initrd")
 		spinner.Stop()

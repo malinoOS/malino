@@ -62,12 +62,13 @@ func exportProj(name string) error {
 		return err
 	}
 
+	// why???
 	fmt.Println("RUN grub-mkrescue")
-	if err := execCmd(true, "grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
+	if err := execCmd(true, "grub-mkrescue", "-o", name+".iso", "iso/", "-quiet"); err != nil {
 		fmt.Println("RUN /usr/bin/grub-mkrescue")
-		if err := execCmd(true, "/usr/bin/grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
+		if err := execCmd(true, "/usr/bin/grub-mkrescue", "-o", name+".iso", "iso/", "-quiet"); err != nil {
 			fmt.Println("RUN /bin/grub-mkrescue")
-			if err := execCmd(true, "/bin/grub-mkrescue", "-o", name+".iso", "iso/"); err != nil {
+			if err := execCmd(true, "/bin/grub-mkrescue", "-o", name+".iso", "iso/", "-quiet"); err != nil {
 				os.RemoveAll("iso")
 				return err
 			}

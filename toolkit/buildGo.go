@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/briandowns/spinner"
 )
 
-func buildGoProj(spinner *spinner.Spinner, conf []configLine) error {
+func buildGoProj(spinner *spinner.Spinner) error {
 	fmt.Println(" DL dependencies")
 	spinner.Start()
 	if err := execCmd(true, "/usr/bin/go", "mod", "tidy"); err != nil {
@@ -19,29 +20,16 @@ func buildGoProj(spinner *spinner.Spinner, conf []configLine) error {
 		return err
 	}
 
+	spinner.Stop()
 	fmt.Println(" GO init")
-	buildFlagsExist := false
-	for _, line := range conf {
-		if line.operation == "buildflags" {
-			buildFlagsExist = true
-			if err := execCmd(true, append([]string{"/usr/bin/go", "build", "-o", "mInit"}, line.args...)...); err != nil {
-				spinner.Stop()
-				return err
-			}
-		} else if line.operation == "verfmt" {
-			buildFlagsExist = true
-			ver, err := handleVerfmtLine(line)
-			if err != nil {
-				return err
-			}
-			if err := execCmd(true, "/usr/bin/go", "build", "-o", "mInit", "-ldflags", "-X main.Version="+ver); err != nil {
-				spinner.Stop()
-				return err
-			}
+	spinner.Start()
+	if len(buildflags) == 0 {
+		if err := execCmd(true, "/usr/bin/go", "build", "-o", "mInit", "-ldflags", "-X main.Version="+time.Now().Format("060102")); err != nil {
+			spinner.Stop()
+			return err
 		}
-	}
-	if !buildFlagsExist {
-		if err := execCmd(true, "/usr/bin/go", "build", "-o", "mInit"); err != nil {
+	} else {
+		if err := execCmd(true, append([]string{"/usr/bin/go", "build", "-o", "mInit", "-ldflags", "-X main.Version=" + time.Now().Format("060102")}, buildflags...)...); err != nil {
 			spinner.Stop()
 			return err
 		}
