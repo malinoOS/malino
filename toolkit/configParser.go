@@ -108,7 +108,8 @@ func handleModpackLine(line configLine) error {
 				{nil, "include", []string{fmt.Sprintf("/home/%s/.malino/modules/drivers/usb/host/xhci-plat-hcd.ko", currentUser.Username), "/modules/xhci-plat-hcd.ko"}},
 			},
 			"usbhid": {
-				{nil, "include", []string{fmt.Sprintf("dir////home/%s/.malino/modules/drivers/hid/usbhid", currentUser.Username), "/modules/usbhid"}},
+				{nil, "include", []string{fmt.Sprintf("/home/%s/.malino/modules/drivers/hid/usbhid/usbkbd.ko", currentUser.Username), "/modules/usbkbd.ko"}},
+				{nil, "include", []string{fmt.Sprintf("/home/%s/.malino/modules/drivers/hid/usbhid/usbmouse.ko", currentUser.Username), "/modules/mouse/usbmouse.ko"}},
 			},
 			"mouse": {
 				{nil, "include", []string{fmt.Sprintf("/home/%s/.malino/modules/drivers/input/mouse/gpio_mouse.ko", currentUser.Username), "/modules/mouse/gpio_mouse.ko"}},
