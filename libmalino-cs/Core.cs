@@ -135,4 +135,11 @@ public class malino {
         if (val != 0)
             throw new Exception(Errno.GetStringErr(val));
     }
+
+    public static void LoadAllKernelModules() {
+        foreach (var filePath in Directory.EnumerateFiles("/modules", "*", SearchOption.AllDirectories))
+        {
+            LoadKernelModule(filePath);
+        }
+    }
 }

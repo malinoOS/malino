@@ -103,6 +103,12 @@ func buildProj() error {
 	}
 
 	// now is the time to handle includes, modpacks, etc...
+	// handle modpacks
+	for i, modpack := range modpacks {
+		if err := handleModpackLine(modpack); err != nil {
+			return fmt.Errorf("malino.cfg: line %d: %s", modpackLines[i], err.Error())
+		}
+	}
 	// handle includes
 	for i, include := range includes {
 		if err := handleIncludeLine(include); err != nil {

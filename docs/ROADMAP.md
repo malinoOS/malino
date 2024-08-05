@@ -7,7 +7,7 @@
 - [X] Mounting partitions, rebooting, etc...
 - [X] App execution
 - [X] Kernel module loading
-- [ ] Kernel module including
+- [X] Kernel module including
 - [ ] Mouse support
 - [ ] Using the entire ISO (not just the initrd)
 - [ ] Arch Linux support

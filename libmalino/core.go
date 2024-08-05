@@ -3,6 +3,7 @@ package libmalino
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -130,7 +131,7 @@ func UnmountDevFS() error {
 }
 
 // Loads a Linux kernel module (.ko format).
-func LoadKernelModule(modulePath string, params string) error {
+func LoadKernelModule(modulePath string) error {
 	// open the module file
 	fd, err := os.Open(modulePath)
 	if err != nil {
@@ -154,7 +155,7 @@ func LoadKernelModule(modulePath string, params string) error {
 		return err
 	}
 
-	byteptr, err := syscall.BytePtrFromString(params)
+	byteptr, err := syscall.BytePtrFromString("")
 	if err != nil {
 		return err
 	}
@@ -166,4 +167,20 @@ func LoadKernelModule(modulePath string, params string) error {
 	}
 
 	return nil
+}
+
+// Loads every Linux kernel module in /modules. You can either include modules manually, or use modpack in your malino.cfg.
+func LoadAllKernelModules() error {
+	return filepath.Walk("/modules", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			if err := LoadKernelModule(path); err != nil {
+				return fmt.Errorf("failed to load module %s: %s", path, err.Error())
+			}
+		}
+		return nil
+	})
 }
