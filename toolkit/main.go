@@ -163,11 +163,7 @@ func execCmd(printOutput bool, args ...string) error {
 }
 
 func extractWith7z(file string) error {
-	// extract a file with 7z command. if that fails, use the 7zz command. if that fails, return the error.
-	if err := execCmd(false, "7z", "x", file); err == nil {
-		return nil
-	}
-	if err := execCmd(false, "7zz", "x", file); err != nil {
+	if err := execCmd(false, "7z", "x", file, "-aoa"); err != nil {
 		return err
 	}
 	return nil
